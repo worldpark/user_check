@@ -24,11 +24,11 @@ public class AttendanceStatus {
     private UUID statusId;
 
     private String checkStatus;
-    private LocalDateTime checkDate;
-    private LocalDateTime updateDate;
+    private LocalDateTime checkTime;
+    private LocalDateTime updateTime;
 
     @ManyToOne
-    private AttendanceTarget attendanceTarget;
+    private User user;
 
     @ManyToOne
     private AttendanceTime attendanceTime;

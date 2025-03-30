@@ -21,7 +21,7 @@ import java.util.UUID;
 public class AttendanceTime {
 
     @Id
-    private UUID timeId;
+    private UUID attendanceTimeId;
 
     private LocalDateTime attendanceDatetime;
 
@@ -30,8 +30,8 @@ public class AttendanceTime {
 
     @PrePersist
     public void prePersist() {
-        if (timeId == null) {
-            timeId = UUIDv6Generator.generate();
+        if (attendanceTimeId == null) {
+            attendanceTimeId = UUIDv6Generator.generate();
         }
     }
 }
