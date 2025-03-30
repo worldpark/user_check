@@ -79,14 +79,16 @@ public class JWTUtil {
                     .setSigningKey(this.secretKey).build()
                     .parseClaimsJws(token);
             return true;
-        } catch (SecurityException | MalformedJwtException e) {
-            log.info("JWT 토큰이 유효하지 않습니다.", e);
-        } catch (ExpiredJwtException e) {
-            log.info("JWT 토큰이 만료되었습니다.", e);
-        } catch (UnsupportedJwtException e) {
-            log.info("지원하지 않는 JWT 토큰 입니다.", e);
-        } catch (IllegalArgumentException e) {
-            log.info("JWT claims가 비어있습니다.", e);
+        } catch (SecurityException | MalformedJwtException exception) {
+            throw new MalformedJwtException("JWT 토큰이 유효하지 않습니다.");
+
+        } catch (ExpiredJwtException expiredJwtException) {
+
+        } catch (UnsupportedJwtException unsupportedJwtException) {
+            throw new UnsupportedJwtException("지원 하지 않는 JWT 토큰 입니다.");
+
+        } catch (IllegalArgumentException illegalArgumentException) {
+            throw new IllegalArgumentException("JWT claims가 비어 있습니다.");
         }
         return false;
     }

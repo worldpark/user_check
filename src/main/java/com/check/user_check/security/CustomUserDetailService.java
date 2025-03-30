@@ -1,6 +1,5 @@
 package com.check.user_check.security;
 
-import com.check.user_check.dto.UserDto;
 import com.check.user_check.entity.User;
 import com.check.user_check.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
