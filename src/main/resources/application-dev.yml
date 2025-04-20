@@ -4,6 +4,7 @@ server:
   application:
     name: user_check
 
+spring:
   jpa:
     hibernate:
       ddl-auto: update
@@ -12,3 +13,6 @@ server:
         show_sql: true
         dialect: org.hibernate.dialect.MariaDBDialect
     generate-ddl: true
+    defer-datasource-initialization: true
+    open-in-view: false
+

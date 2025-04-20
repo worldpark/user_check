@@ -11,7 +11,7 @@
 
 ### 유저정보
 
-- /api/{userId}/user
+- /api/user/{id}
   - [GET] 
     - 유저 상세 정보
   - [POST] 
@@ -24,15 +24,22 @@
 
 ## 유저
 
-### 자신의 출결 리스트
+[//]: # (### 자신의 출결 리스트)
 
-- /api/user/{userId}/{nowDate}/attendances
-  - [GET]
-    - 자신의 출결 리스트 및 상태 출력
+[//]: # ()
+[//]: # (- /api/user/{id}/{nowDate}/attendances)
+
+[//]: # (  - [GET])
+
+[//]: # (    - 자신의 출결 리스트 및 상태 출력)
 
 ### 출결 체크
 
-- /api/user/{userId}/{statusId}/check
+[//]: # (- /api/user/{id}/{statusId}/check)
+
+- /api/user/attendancestatus/{nowDate}
+  - [GET]
+    - 자신의 출결 리스트 및 상태 출력
   - [PUT]
     - 출결체크
 
@@ -42,7 +49,7 @@
 
 ### 출결 프로젝트 관리
 
-- /api/admin/{userId}/attendance
+- /api/admin/attendance
   - [GET]
     - 관리할 출결 리스트 출력
   - [POST]
@@ -54,9 +61,9 @@
 
 ### 출결 대상 관리
 
-- /api/admin/{attendanceId}/attendance-target
+- /api/admin/{attendanceId}/attendancetarget
   - [GET]
-    - 출결 대상 출력
+    - 출결 대상 리스트 출력
   - [POST]
     - 출결 대상 등록
   - [PUT]
@@ -66,9 +73,9 @@
 
 ### 출결 시간 관리
 
-- /api/admin/{attendanceId}/attendance-time
+- /api/admin/{attendanceId}/attendancetime
   - [GET]
-    - 출결 시간 출력
+    - 출결 시간 리스트 출력
   - [POST]
     - 출결 시간 생성
   - [PUT]
@@ -78,9 +85,9 @@
 
 ### 출결 상태 관리
 
-- /api/admin/{attendanceTimeId}/attendace-status
+- /api/admin/{attendanceId}/attendancestatus
     - [GET]
-        - 출결 상태 출력
+        - 출결 상태 리스트 출력
     - [POST]
         - 출결 상태 생성
     - [PUT]

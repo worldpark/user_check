@@ -1,12 +1,15 @@
 package com.check.user_check.entity;
 
-import com.check.user_check.Role;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import com.check.user_check.enumeratedType.Role;
+import com.check.user_check.util.UUIDv6Generator;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -16,10 +19,26 @@ import lombok.NoArgsConstructor;
 public class User {
 
     @Id
+    private UUID id;
+
+    @NotNull
+    @Column(unique = true)
     private String userId;
 
+    @NotNull
     private String password;
-    private Role role;
+    @NotNull
     private String userName;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @PrePersist
+    public void prePersist() {
+        if (id == null) {
+            id = UUIDv6Generator.generate();
+        }
+    }
 
 }
