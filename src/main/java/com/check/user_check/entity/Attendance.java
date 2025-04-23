@@ -1,14 +1,15 @@
 package com.check.user_check.entity;
 
+import com.check.user_check.enumeratedType.AttendanceAuth;
 import com.check.user_check.util.UUIDv6Generator;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -23,6 +24,8 @@ public class Attendance {
 
     private String attendanceName;
 
+    @OneToMany(mappedBy = "attendance")
+    List<AttendanceTarget> attendanceTargets;
 
     @PrePersist
     public void prePersist() {

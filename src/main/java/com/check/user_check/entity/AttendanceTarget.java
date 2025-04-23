@@ -1,10 +1,9 @@
 package com.check.user_check.entity;
 
+import com.check.user_check.enumeratedType.AttendanceAuth;
 import com.check.user_check.util.UUIDv6Generator;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +20,10 @@ public class AttendanceTarget {
 
     @Id
     private UUID targetId;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private AttendanceAuth auth;
 
     @ManyToOne
     private User user;

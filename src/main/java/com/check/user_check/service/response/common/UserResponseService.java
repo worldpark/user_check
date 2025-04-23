@@ -1,4 +1,4 @@
-package com.check.user_check.service.common;
+package com.check.user_check.service.response.common;
 
 import com.check.user_check.enumeratedType.Role;
 import com.check.user_check.config.security.CustomUserDetails;
@@ -73,6 +73,7 @@ public class UserResponseService {
         );
     }
 
+    @Transactional
     public ResponseEntity<ResultResponse<UUID>> createUser(UserCreateRequest userCreateRequest){
 
         String password = passwordEncoder.encode(userCreateRequest.password());
@@ -90,10 +91,11 @@ public class UserResponseService {
     }
 
     @Transactional
-    public ResponseEntity<ResultResponse<Void>> updateUser(UUID id
-            , UserUpdateRequest userUpdateRequest
+    public ResponseEntity<ResultResponse<Void>> updateUser(
+            UserUpdateRequest userUpdateRequest
             , CustomUserDetails customUserDetails
     ){
+        UUID id = userUpdateRequest.uid();
         authCheck(id, customUserDetails);
 
         String password = passwordEncoder.encode(userUpdateRequest.password());
@@ -111,13 +113,12 @@ public class UserResponseService {
 
     @Transactional
     public ResponseEntity<ResultResponse<Void>> deleteUser(
-            UUID id
-            , CustomUserDetails customUserDetails
-    ){
+            UUID id,
+            CustomUserDetails customUserDetails){
+
         authCheck(id, customUserDetails);
 
         userService.delete(id);
-
         return ResultResponse.deleteContent();
     }
 }

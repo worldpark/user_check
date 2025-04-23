@@ -1,7 +1,7 @@
 package com.check.user_check.controller.common;
 
 import com.check.user_check.dto.response.UserListResponse;
-import com.check.user_check.service.common.UserResponseService;
+import com.check.user_check.service.response.common.UserResponseService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

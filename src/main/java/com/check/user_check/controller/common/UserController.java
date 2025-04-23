@@ -6,7 +6,7 @@ import com.check.user_check.dto.ResultResponse;
 import com.check.user_check.dto.request.UserCreateRequest;
 import com.check.user_check.dto.request.UserUpdateRequest;
 import com.check.user_check.dto.response.user.UserResponse;
-import com.check.user_check.service.common.UserResponseService;
+import com.check.user_check.service.response.common.UserResponseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -44,13 +44,12 @@ public class UserController {
     }
 
     @Operation(summary = "유저 정보 수정")
-    @PutMapping("/{id}")
+    @PutMapping
     public ResponseEntity<ResultResponse<Void>> updateUser(
-            @PathVariable UUID id,
             @RequestBody @Valid UserUpdateRequest userUpdateRequest,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
-        return userResponseService.updateUser(id, userUpdateRequest, customUserDetails);
+        return userResponseService.updateUser(userUpdateRequest, customUserDetails);
     }
 
     @Operation(summary = "유저 회원 탈퇴")
