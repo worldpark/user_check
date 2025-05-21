@@ -5,6 +5,7 @@ import com.check.user_check.config.swagger.annotation.ResultCreatedResponse;
 import com.check.user_check.dto.ResultResponse;
 import com.check.user_check.dto.request.UserCreateRequest;
 import com.check.user_check.dto.request.UserUpdateRequest;
+import com.check.user_check.dto.response.UserListResponse;
 import com.check.user_check.dto.response.user.UserResponse;
 import com.check.user_check.service.response.common.UserResponseService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +25,13 @@ import java.util.UUID;
 public class UserController {
 
     private final UserResponseService userResponseService;
+
+    //이렇게 해도됄듯? 20250507
+    @GetMapping
+    public ResponseEntity<UserListResponse> getUsersInfo(){
+
+        return userResponseService.readAllUsers();
+    }
 
     @Operation(summary = "회원가입")
     @ResultCreatedResponse

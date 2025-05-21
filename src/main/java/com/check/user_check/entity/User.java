@@ -19,7 +19,7 @@ import java.util.UUID;
 public class User {
 
     @Id
-    private UUID id;
+    private UUID uid;
 
     @NotNull
     @Column(unique = true)
@@ -36,8 +36,8 @@ public class User {
 
     @PrePersist
     public void prePersist() {
-        if (id == null) {
-            id = UUIDv6Generator.generate();
+        if (uid == null) {
+            uid = UUIDv6Generator.generate();
         }
     }
 

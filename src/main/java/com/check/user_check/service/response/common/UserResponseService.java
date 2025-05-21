@@ -48,7 +48,7 @@ public class UserResponseService {
         return ResponseEntity.ok(
                 UserListResponse.builder()
                         .users(users.stream().map(user -> UserResponse.builder()
-                                        .id(user.getId())
+                                        .uid(user.getUid())
                                         .userId(user.getUserId())
                                         .userName(user.getUserName())
                                         .role(user.getRole())
@@ -65,7 +65,7 @@ public class UserResponseService {
 
         return ResponseEntity.ok(
                 UserResponse.builder()
-                        .id(user.getId())
+                        .uid(user.getUid())
                         .userId(user.getUserId())
                         .userName(user.getUserName())
                         .role(user.getRole())
@@ -95,12 +95,12 @@ public class UserResponseService {
             UserUpdateRequest userUpdateRequest
             , CustomUserDetails customUserDetails
     ){
-        UUID id = userUpdateRequest.uid();
-        authCheck(id, customUserDetails);
+        UUID uid = userUpdateRequest.uid();
+        authCheck(uid, customUserDetails);
 
         String password = passwordEncoder.encode(userUpdateRequest.password());
         User user = User.builder()
-                .id(id)
+                .uid(uid)
                 .password(password)
                 .userName(userUpdateRequest.userName())
                 .role(userUpdateRequest.role())

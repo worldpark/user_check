@@ -42,11 +42,12 @@ public class AttendanceTargetService {
     }
 
     public List<AttendanceTargetResponse> findTargetUserAllByTargetId(Attendance attendance){
-        return attendanceTargetRepository.findTargetUserAllByTargetId(attendance);
+//        return attendanceTargetRepository.findTargetUserAllByTargetId(attendance);
+        return null;
     }
 
     public void ownerCheck(User user, Attendance attendance){
-        attendanceTargetRepository.ownerCheck(user, AttendanceAuth.OWNER, attendance)
+        attendanceTargetRepository.ownerCheck(user, attendance)
                 .orElseThrow(() -> new EntityNotFoundException("출결 관리자가 아닙니다.|030303"));
     }
 

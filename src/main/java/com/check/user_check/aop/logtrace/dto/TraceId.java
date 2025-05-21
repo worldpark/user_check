@@ -1,6 +1,5 @@
 package com.check.user_check.aop.logtrace.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter

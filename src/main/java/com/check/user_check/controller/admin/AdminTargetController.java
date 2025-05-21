@@ -24,16 +24,15 @@ public class AdminTargetController {
     @GetMapping
     public ResponseEntity<List<AttendanceTargetResponse>> readAttendanceTarget(
             @PathVariable UUID attendanceId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
-            ){
+            @AuthenticationPrincipal CustomUserDetails customUserDetails){
         return adminTargetResponseService.readAttendanceTarget(attendanceId, customUserDetails);
     }
 
     @PostMapping
     public ResponseEntity<ResultResponse<UUID>> createAttendanceTarget(
             @Valid TargetListCreateRequest targetListCreateRequest,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
-            ){
+            @AuthenticationPrincipal CustomUserDetails customUserDetails){
+
         return null;
     }
 }

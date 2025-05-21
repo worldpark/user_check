@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +26,12 @@ public class Attendance {
     private String attendanceName;
 
     @OneToMany(mappedBy = "attendance")
-    List<AttendanceTarget> attendanceTargets;
+    List<AttendanceTarget> attendanceTargets = new ArrayList<>();
+
+    public void addTarget(AttendanceTarget attendanceTarget){
+        this.attendanceTargets.add(attendanceTarget);
+        attendanceTarget.setAttendance(this);
+    }
 
     @PrePersist
     public void prePersist() {

@@ -30,7 +30,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .userName(user.getUserId())
                 .password(user.getPassword())
                 .authorities(authorities)
-                .userUuid(user.getId())
+                .userUuid(user.getUid())
                 .build();
     }
 }

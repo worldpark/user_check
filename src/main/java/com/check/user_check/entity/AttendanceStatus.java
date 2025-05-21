@@ -1,10 +1,7 @@
 package com.check.user_check.entity;
 
 import com.check.user_check.util.UUIDv6Generator;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,10 +24,12 @@ public class AttendanceStatus {
     private LocalDateTime checkTime;
     private LocalDateTime updateTime;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uid")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "attendance_time_id")
     private AttendanceTime attendanceTime;
 
     @PrePersist

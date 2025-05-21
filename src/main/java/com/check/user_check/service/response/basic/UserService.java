@@ -40,7 +40,7 @@ public class UserService {
 
     public UUID save(User user){
         try{
-            return userRepository.save(user).getId();
+            return userRepository.save(user).getUid();
         }catch (DataIntegrityViolationException dataIntegrityViolationException){
             String message = dataIntegrityViolationException.getMessage();
 

@@ -4,6 +4,7 @@ import com.check.user_check.config.security.util.AuthenticationUtil;
 import com.check.user_check.config.security.util.JWTUtil;
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,7 @@
 package com.check.user_check.entity;
 
 import com.check.user_check.enumeratedType.AttendanceAuth;
+import com.check.user_check.enumeratedType.TargetStatus;
 import com.check.user_check.util.UUIDv6Generator;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -25,11 +26,21 @@ public class AttendanceTarget {
     @Enumerated(EnumType.STRING)
     private AttendanceAuth auth;
 
-    @ManyToOne
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private TargetStatus targetStatus;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uid")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "attendance_id")
     private Attendance attendance;
+
+    public void setAttendance(Attendance attendance) {
+        this.attendance = attendance;
+    }
 
     @PrePersist
     public void prePersist() {

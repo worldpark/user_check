@@ -1,6 +1,7 @@
 package com.check.user_check.dto.request.target;
 
 import com.check.user_check.enumeratedType.AttendanceAuth;
+import com.check.user_check.enumeratedType.TargetStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
@@ -14,6 +15,10 @@ public record TargetCreateRequest(
 
         @Schema(description = "출결 소유 권한", example = "USER")
         @NotNull(message = "관리자에게 문의해주세요.")
-        AttendanceAuth attendanceAuth
+        AttendanceAuth attendanceAuth,
+
+        @Schema(description = "대상자 상태", example = "INVITE")
+        @NotNull(message = "관리자에게 문의해주세요.")
+        TargetStatus targetStatus
 ) {
 }

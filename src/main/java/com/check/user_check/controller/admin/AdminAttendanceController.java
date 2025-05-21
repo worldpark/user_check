@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +20,15 @@ import java.util.UUID;
 
 @Tag(name = "Attendance", description = "출결 DTO")
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/admin/attendance")
 public class AdminAttendanceController {
 
     private final AdminAttendanceResponseService attendanceResponseService;
+
+    @Autowired
+    public AdminAttendanceController(AdminAttendanceResponseService attendanceResponseService) {
+        this.attendanceResponseService = attendanceResponseService;
+    }
 
     @Operation(summary = "자신의 출결 목록")
     @GetMapping

@@ -46,7 +46,7 @@ public class LoginTests {
 
         if(user.isEmpty()){
             userRepository.save(User.builder()
-                            .id(UUIDv6Generator.generate())
+                            .uid(UUIDv6Generator.generate())
                             .userId(testId)
                             .userName("test2")
                             .password(password)
