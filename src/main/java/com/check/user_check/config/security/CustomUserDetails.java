@@ -12,14 +12,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
+    private final UUID userId;
     private final String userName;
     private final String password;
-    private final UUID userUuid;
 
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public UUID getUserUuid() {
-        return userUuid;
+    public UUID getUserId() {
+        return userId;
     }
 
     @Override

@@ -1,19 +1,19 @@
 package com.check.user_check.dto.request;
 
+import com.check.user_check.enumeratedType.AttendanceStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
-import java.util.UUID;
+import java.time.LocalDateTime;
 
 public record AttendanceUpdateRequest(
 
-        @NotNull(message = "관리자에게 문의해주세요.")
-        @Schema(description = "출결 아이디", example = "d72be5b0-2031-11f0-8337-bd8c4a471c40")
-        UUID attendanceId,
+        @NotNull(message = "날짜 정보가 정확하지 않습니다.")
+        @Schema(description = "출석 시간", example = "2025-05-05 08:00:00")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        LocalDateTime checkTime,
 
-        @NotNull()
-        @Schema(description = "출결 이름", example = "과학 시험")
-        @Size(max = 20, min = 5, message = "출결 이릉은 5글자이상 20글자 이하로만 입력 가능합니다.")
-        String attendanceName
+        @Schema(description = "출석 상태", example = "PRESENT")
+        AttendanceStatus status
 ) {}

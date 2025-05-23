@@ -14,12 +14,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Transactional
 public class LoginTests {
 
     @LocalServerPort
@@ -40,15 +42,15 @@ public class LoginTests {
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = port;
 
-        Optional<User> user = userRepository.findByUserId(testId);
-        testId = "testId2";
+        Optional<User> user = userRepository.findByUsername(testId);
+        testId = "test";
         password = passwordEncoder.encode("1111");
 
         if(user.isEmpty()){
             userRepository.save(User.builder()
-                            .uid(UUIDv6Generator.generate())
-                            .userId(testId)
-                            .userName("test2")
+                            .userId(UUIDv6Generator.generate())
+                            .username(testId)
+                            .name("test2")
                             .password(password)
                             .role(Role.ROLE_USER)
                             .build());
@@ -65,8 +67,8 @@ public class LoginTests {
     private void end(){
 
         if(testSave){
-            Optional<User> user = userRepository.findByUserId(testId);
-            userRepository.delete(user.orElseThrow(() -> new RuntimeException()));
+            Optional<User> user = userRepository.findByUsername(testId);
+//            userRepository.delete(user.orElseThrow(() -> new RuntimeException()));
         }
     }
 }

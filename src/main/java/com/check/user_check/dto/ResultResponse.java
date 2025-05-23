@@ -23,12 +23,14 @@ public class ResultResponse<T> {
     private final String code;
     private final String message;
     private final T data;
+    private final String field;
     private final UUID uuid;
     private final List<UUID> uuids;
 
     public ResultResponse(){
         this.code = null;
         this.message = "success";
+        this.field = null;
         this.data = null;
         this.uuid = null;
         this.uuids = null;
@@ -95,7 +97,7 @@ public class ResultResponse<T> {
             if(messageWithCode[1] == null){
                 code = baseExceptionCode.getError().code();
             }else{
-                code = messageWithCode[0];
+                code = messageWithCode[1];
             }
         }else{
             code = baseExceptionCode.getError().code();
@@ -106,6 +108,45 @@ public class ResultResponse<T> {
                         .message(message)
                         .code(code)
                         .build()
+                );
+    }
+
+    public static ResponseEntity<Object> validation(
+            BaseExceptionCode baseExceptionCode,
+            String field,
+            @jakarta.annotation.Nullable String... messageWithCode
+    ) {
+        String message = "";
+
+        if(messageWithCode != null && messageWithCode.length > 0){
+            if(messageWithCode[0] == null || messageWithCode[0].isBlank()){
+                message = baseExceptionCode.getError().message();
+            }else{
+                message = messageWithCode[0];
+            }
+        }else{
+            message = baseExceptionCode.getError().message();
+        }
+
+        String code = "";
+
+        if(messageWithCode != null && messageWithCode.length > 1){
+            if(messageWithCode[1] == null){
+                code = baseExceptionCode.getError().code();
+            }else{
+                code = messageWithCode[1];
+            }
+        }else{
+            code = baseExceptionCode.getError().code();
+        }
+
+        return ResponseEntity.status(baseExceptionCode.getError().status())
+                .body(
+                        ResultResponse.<Void>builder()
+                                .message(message)
+                                .code(code)
+                                .field(field)
+                                .build()
                 );
     }
 }

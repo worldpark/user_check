@@ -2,6 +2,7 @@ package com.check.user_check.controller.common;
 
 import com.check.user_check.config.security.CustomUserDetails;
 import com.check.user_check.config.swagger.annotation.ResultCreatedResponse;
+import com.check.user_check.config.swagger.annotation.ResultUpdateAndDeleteResponse;
 import com.check.user_check.dto.ResultResponse;
 import com.check.user_check.dto.request.UserCreateRequest;
 import com.check.user_check.dto.request.UserUpdateRequest;
@@ -26,7 +27,6 @@ public class UserController {
 
     private final UserResponseService userResponseService;
 
-    //이렇게 해도됄듯? 20250507
     @GetMapping
     public ResponseEntity<UserListResponse> getUsersInfo(){
 
@@ -53,15 +53,18 @@ public class UserController {
 
     @Operation(summary = "유저 정보 수정")
     @PutMapping
+    @ResultUpdateAndDeleteResponse
     public ResponseEntity<ResultResponse<Void>> updateUser(
+            @PathVariable UUID id,
             @RequestBody @Valid UserUpdateRequest userUpdateRequest,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
-        return userResponseService.updateUser(userUpdateRequest, customUserDetails);
+        return userResponseService.updateUser(id, userUpdateRequest, customUserDetails);
     }
 
     @Operation(summary = "유저 회원 탈퇴")
     @DeleteMapping("/{id}")
+    @ResultUpdateAndDeleteResponse
     public ResponseEntity<ResultResponse<Void>> deleteUser(
             @PathVariable UUID id,
             @AuthenticationPrincipal CustomUserDetails customUserDetails

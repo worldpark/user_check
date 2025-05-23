@@ -35,8 +35,8 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
         Map<String, String> jsonData = AuthenticationUtil.parseRequestJSON(request);
 
-        if(jsonData.get("userId") == null
-                || jsonData.get("userId").isEmpty()
+        if(jsonData.get("username") == null
+                || jsonData.get("username").isEmpty()
                 || jsonData.get("password") == null
                 || jsonData.get("password").isEmpty()
         ){
@@ -50,7 +50,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 new UsernamePasswordAuthenticationToken(
-                        jsonData.get("userId"),
+                        jsonData.get("username"),
                         jsonData.get("password")
                 );
 

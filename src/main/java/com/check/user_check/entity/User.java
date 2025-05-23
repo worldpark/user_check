@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -16,29 +17,48 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class User {
+public class User extends BaseEntity{
 
     @Id
-    private UUID uid;
+    private UUID userId;
 
     @NotNull
     @Column(unique = true)
-    private String userId;
+    private String username;
 
     @NotNull
     private String password;
     @NotNull
-    private String userName;
+    private String name;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<Attendance> attendances;
+
+    @OneToMany(mappedBy = "assignedUser", cascade = CascadeType.REMOVE)
+    private List<AttendanceTarget> assignTargets;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<AttendanceTarget> attendanceTargets;
+
+    public User(UUID userId) {
+        this.userId = userId;
+    }
+
     @PrePersist
     public void prePersist() {
-        if (uid == null) {
-            uid = UUIDv6Generator.generate();
+        if (userId == null) {
+            userId = UUIDv6Generator.generate();
         }
+    }
+
+    public void changeInfo(String password, String name, Role role){
+        this.password = password;
+        this.name = name;
+        this.role = role;
     }
 
 }

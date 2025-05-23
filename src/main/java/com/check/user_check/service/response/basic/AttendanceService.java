@@ -1,17 +1,16 @@
 package com.check.user_check.service.response.basic;
 
 import com.check.user_check.entity.Attendance;
-import com.check.user_check.entity.User;
-import com.check.user_check.enumeratedType.Role;
 import com.check.user_check.repository.AttendanceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,18 +18,14 @@ public class AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
 
-    public List<Attendance> findAllByUser(User user){
-        return attendanceRepository.findAllByUser(user);
-    }
-
     public Attendance findById(UUID attendanceId){
         return attendanceRepository.findById(attendanceId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 출결이 존재하지 않습니다.|020301"));
     }
 
-    public Attendance save(Attendance attendance){
+    public UUID save(Attendance attendance){
         try{
-            return attendanceRepository.save(attendance);
+            return attendanceRepository.save(attendance).getAttendanceId();
         }catch (DataIntegrityViolationException dataIntegrityViolationException){
             String message = dataIntegrityViolationException.getMessage();
 
@@ -38,7 +33,37 @@ public class AttendanceService {
         }
     }
 
+    public List<UUID> saveAll(List<Attendance> attendances){
+
+        try{
+            List<Attendance> attendanceList = attendanceRepository.saveAll(attendances);
+
+            return attendanceList.stream()
+                    .map(Attendance::getAttendanceId)
+                    .collect(Collectors.toList());
+
+        }catch (DataIntegrityViolationException dataIntegrityViolationException){
+            String message = dataIntegrityViolationException.getMessage();
+
+            throw new DataIntegrityViolationException(message + "|020303");
+        }
+    }
+
+    public List<Attendance> findAllFetch(){
+        return attendanceRepository.findAllFetch();
+    }
+
     public void delete(Attendance attendance){
         attendanceRepository.delete(attendance);
+    }
+
+    public Attendance findByUserIdAndAttendanceDate(UUID userId, LocalDateTime attendanceDate){
+
+        return attendanceRepository.findByUserIdAndAttendanceDate(userId, attendanceDate)
+                .orElseThrow(() -> new EntityNotFoundException("해당하는 출결이 존재하지 않습니다.|020304"));
+    }
+
+    public List<Attendance> findUserAttendance(UUID userId, LocalDateTime minTime, LocalDateTime maxTime){
+        return attendanceRepository.findUserAttendance(userId, minTime, maxTime);
     }
 }

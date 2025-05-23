@@ -29,8 +29,8 @@ public class UserService {
     }
 
     @NoLog
-    public User findByUserId(String userId){
-        return userRepository.findByUserId(userId)
+    public User findByUsername(String username){
+        return userRepository.findByUsername(username)
                 .orElseThrow(this::userNotFound);
     }
 
@@ -40,7 +40,7 @@ public class UserService {
 
     public UUID save(User user){
         try{
-            return userRepository.save(user).getUid();
+            return userRepository.save(user).getUserId();
         }catch (DataIntegrityViolationException dataIntegrityViolationException){
             String message = dataIntegrityViolationException.getMessage();
 

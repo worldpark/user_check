@@ -13,12 +13,12 @@ import java.util.Collection;
 @ToString
 public class UserAuthModel extends User {
 
-    private String userId;
+    private String username;
     private String password;
 
     public UserAuthModel(String username, String password, Collection<? extends GrantedAuthority> authorities) {
         super(username, password, authorities);
-        this.userId = username;
+        this.username = username;
         this.password = password;
     }
 }

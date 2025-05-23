@@ -19,7 +19,7 @@ public class LoginPathItem {
         Gson gson = new Gson();
         String requestExample = gson.toJson(
                 Map.of(
-                        "userId", "userId",
+                        "username", "username",
                         "password", "password"
                 )
         );
@@ -28,7 +28,7 @@ public class LoginPathItem {
                 .content(new Content().addMediaType(
                         org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
                         new MediaType().schema(new Schema<Map<String, String>>()
-                                .addProperty("userId", new Schema<String>())
+                                .addProperty("username", new Schema<String>())
                                 .addProperty("password", new Schema<String>())
                                 .example(requestExample)
                         ))

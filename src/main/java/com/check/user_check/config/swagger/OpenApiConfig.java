@@ -30,7 +30,7 @@ public class OpenApiConfig {
                 );
 
         Info info = new Info()
-                .title("웹 실기 API")
+                .title("출결 API")
                 .version("1");
 
         Paths paths = new Paths()

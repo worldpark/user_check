@@ -1,10 +1,13 @@
 package com.check.user_check.controller.admin;
 
 import com.check.user_check.config.security.CustomUserDetails;
+import com.check.user_check.config.swagger.annotation.ResultCreatedListResponse;
+import com.check.user_check.config.swagger.annotation.ResultUpdateAndDeleteResponse;
 import com.check.user_check.dto.ResultResponse;
-import com.check.user_check.dto.request.target.TargetListCreateRequest;
+import com.check.user_check.dto.request.target.AttendanceTargetRequest;
 import com.check.user_check.dto.response.admin.AttendanceTargetResponse;
 import com.check.user_check.service.response.admin.AdminTargetResponseService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,23 +19,47 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/admin/{attendanceId}/attendancetarget")
+@RequestMapping("/api/admin/attendance-target")
 public class AdminTargetController {
 
     private final AdminTargetResponseService adminTargetResponseService;
 
+    @Operation(summary = "출결 대상자 목록")
     @GetMapping
     public ResponseEntity<List<AttendanceTargetResponse>> readAttendanceTarget(
-            @PathVariable UUID attendanceId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails){
-        return adminTargetResponseService.readAttendanceTarget(attendanceId, customUserDetails);
+        return adminTargetResponseService.readAttendanceTarget(customUserDetails);
     }
 
+    @Operation(summary = "출결 대상자 생성")
     @PostMapping
-    public ResponseEntity<ResultResponse<UUID>> createAttendanceTarget(
-            @Valid TargetListCreateRequest targetListCreateRequest,
+    @ResultCreatedListResponse
+    public ResponseEntity<ResultResponse<List<UUID>>> createAttendanceTarget(
+            @RequestBody @Valid AttendanceTargetRequest targetListCreateRequests,
             @AuthenticationPrincipal CustomUserDetails customUserDetails){
 
-        return null;
+        return adminTargetResponseService.createAttendanceTarget(targetListCreateRequests, customUserDetails);
+    }
+
+    @Operation(summary = "출결 대상 수정")
+    @ResultUpdateAndDeleteResponse
+    @PutMapping("/{attendanceTargetId}")
+    public ResponseEntity<ResultResponse<Void>> updateAttendanceTarget(
+            @PathVariable UUID attendanceTargetId,
+            @RequestBody @Valid AttendanceTargetRequest.TargetRequest attendanceTargetRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ){
+        return adminTargetResponseService.updateAttendanceTarget(
+                attendanceTargetId, attendanceTargetRequest, customUserDetails);
+    }
+
+    @Operation(summary = "출결 대상 삭제")
+    @DeleteMapping("/{attendanceTargetId}")
+    @ResultUpdateAndDeleteResponse
+    public ResponseEntity<ResultResponse<Void>> deleteAttendanceTarget(
+            @PathVariable UUID attendanceTargetId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ){
+        return adminTargetResponseService.deleteAttendanceTarget(attendanceTargetId, customUserDetails);
     }
 }

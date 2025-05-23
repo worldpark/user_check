@@ -29,14 +29,14 @@ public class UserResponseService {
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
 
-    private void authCheck(UUID id, CustomUserDetails customUserDetails){
+    private void authCheck(UUID userId, CustomUserDetails customUserDetails){
         List<String> currentRoles = customUserDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
         String currentRole = currentRoles.get(0);
 
-        if(currentRole.equals(Role.ROLE_USER.getRoleName()) && !customUserDetails.getUserUuid().equals(id)){
+        if(currentRole.equals(Role.ROLE_USER.getRoleName()) && !customUserDetails.getUserId().equals(userId)){
             throw new CustomException(HttpStatus.UNAUTHORIZED, "000001", "허용되지 않은 요청");
         }
     }
@@ -48,9 +48,9 @@ public class UserResponseService {
         return ResponseEntity.ok(
                 UserListResponse.builder()
                         .users(users.stream().map(user -> UserResponse.builder()
-                                        .uid(user.getUid())
                                         .userId(user.getUserId())
-                                        .userName(user.getUserName())
+                                        .username(user.getUsername())
+                                        .name(user.getName())
                                         .role(user.getRole())
                                         .build())
                                 .collect(Collectors.toList()))
@@ -65,9 +65,9 @@ public class UserResponseService {
 
         return ResponseEntity.ok(
                 UserResponse.builder()
-                        .uid(user.getUid())
                         .userId(user.getUserId())
-                        .userName(user.getUserName())
+                        .username(user.getUsername())
+                        .name(user.getName())
                         .role(user.getRole())
                         .build()
         );
@@ -79,9 +79,9 @@ public class UserResponseService {
         String password = passwordEncoder.encode(userCreateRequest.password());
 
         User user = User.builder()
-                .userName(userCreateRequest.userName())
+                .username(userCreateRequest.username())
                 .password(password)
-                .userId(userCreateRequest.userId())
+                .name(userCreateRequest.name())
                 .role(userCreateRequest.role())
                 .build();
 
@@ -92,20 +92,16 @@ public class UserResponseService {
 
     @Transactional
     public ResponseEntity<ResultResponse<Void>> updateUser(
-            UserUpdateRequest userUpdateRequest
-            , CustomUserDetails customUserDetails
+            UUID userId,
+            UserUpdateRequest userUpdateRequest,
+            CustomUserDetails customUserDetails
     ){
-        UUID uid = userUpdateRequest.uid();
-        authCheck(uid, customUserDetails);
+        authCheck(userId, customUserDetails);
 
         String password = passwordEncoder.encode(userUpdateRequest.password());
-        User user = User.builder()
-                .uid(uid)
-                .password(password)
-                .userName(userUpdateRequest.userName())
-                .role(userUpdateRequest.role())
-                .build();
+        User user = userService.findById(userId);
 
+        user.changeInfo(password, userUpdateRequest.name(), userUpdateRequest.role());
         userService.save(user);
 
         return ResultResponse.success();

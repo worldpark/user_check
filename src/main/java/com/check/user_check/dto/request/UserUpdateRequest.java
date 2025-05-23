@@ -9,10 +9,6 @@ import java.util.UUID;
 
 public record UserUpdateRequest(
 
-        @Schema(description = "유저 고유 ID", example = "d72be5b0-2031-11f0-8337-bd8c4a471c40")
-        @NotNull(message = "관리자에게 문의해주세요.")
-        UUID uid,
-
         @Schema(description = "유저 암호", example = "password")
         @NotNull(message = "암호를 입력해 주세요.")
         @Pattern(
@@ -23,7 +19,7 @@ public record UserUpdateRequest(
 
         @Schema(description = "유저 이름", example = "name")
         @NotNull(message = "이름을 입력해 주세요.")
-        String userName,
+        String name,
 
         @Schema(description = "유저 권한", example = "ROLE_USER")
         @NotNull(message = "관리자에게 문의해주세요.")
