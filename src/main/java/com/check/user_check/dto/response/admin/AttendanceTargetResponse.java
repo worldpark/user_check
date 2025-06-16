@@ -8,9 +8,8 @@ import java.util.UUID;
 @Builder
 public record AttendanceTargetResponse(
         UUID targetId,
-        LocalDateTime attendanceDate,
         LocalDateTime createAt,
-        String assignedUsername,
-        String username
+        String username,
+        String name
 ) {
 }

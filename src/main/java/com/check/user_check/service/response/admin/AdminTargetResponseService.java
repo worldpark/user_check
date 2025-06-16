@@ -2,22 +2,25 @@ package com.check.user_check.service.response.admin;
 
 import com.check.user_check.config.security.CustomUserDetails;
 import com.check.user_check.dto.ResultResponse;
-import com.check.user_check.dto.request.target.AttendanceTargetRequest;
-import com.check.user_check.dto.request.target.TargetListCreateRequest;
+import com.check.user_check.dto.request.attendance.target.AttendanceTargetRequest;
 import com.check.user_check.dto.response.admin.AttendanceTargetResponse;
 import com.check.user_check.entity.Attendance;
+import com.check.user_check.entity.AttendanceSetting;
 import com.check.user_check.entity.AttendanceTarget;
 import com.check.user_check.entity.User;
 import com.check.user_check.enumeratedType.AttendanceStatus;
 import com.check.user_check.service.response.basic.AttendanceService;
+import com.check.user_check.service.response.basic.AttendanceSettingService;
 import com.check.user_check.service.response.basic.AttendanceTargetService;
-import com.check.user_check.service.response.basic.UserService;
+import com.check.user_check.util.LocalDateTimeCreator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -31,6 +34,8 @@ public class AdminTargetResponseService {
 
     private final AttendanceService attendanceService;
 
+    private final AttendanceSettingService attendanceSettingService;
+
     public ResponseEntity<List<AttendanceTargetResponse>> readAttendanceTarget(
             CustomUserDetails customUserDetails){
 
@@ -39,10 +44,9 @@ public class AdminTargetResponseService {
         List<AttendanceTargetResponse> result = findTargets.stream()
                 .map(attendanceTarget -> AttendanceTargetResponse.builder()
                         .targetId(attendanceTarget.getTargetId())
-                        .attendanceDate(attendanceTarget.getAttendanceDate())
                         .createAt(attendanceTarget.getCreatedAt())
-                        .assignedUsername(attendanceTarget.getAssignedUser().getUsername())
                         .username(attendanceTarget.getUser().getUsername())
+                        .name(attendanceTarget.getUser().getName())
                         .build())
                 .collect(Collectors.toList());
 
@@ -59,15 +63,18 @@ public class AdminTargetResponseService {
 
         List<AttendanceTarget> attendanceTargets = attendanceTargetRequest.targetRequests().stream()
                         .map(targetRequest -> AttendanceTarget.builder()
-                                .attendanceDate(targetRequest.attendanceDate())
                                 .assignedUser(new User(customUserDetails.getUserId()))
                                 .user(new User(targetRequest.userId()))
                                 .build())
                         .collect(Collectors.toList());
 
+        AttendanceSetting attendanceSetting = attendanceSettingService.findAttendanceSetting();
+        LocalDateTime assignDateTime =
+                LocalDateTimeCreator.getNowLocalDateTimeToLocalTime(attendanceSetting.getAttendanceTime());
+
         List<Attendance> attendances = attendanceTargetRequest.targetRequests().stream()
                 .map(targetRequest -> Attendance.builder()
-                        .attendanceDate(targetRequest.attendanceDate())
+                        .attendanceDate(assignDateTime)
                         .status(AttendanceStatus.ABSENT)
                         .user(new User(targetRequest.userId()))
                         .build())
@@ -81,34 +88,23 @@ public class AdminTargetResponseService {
     }
 
     @Transactional(readOnly = false)
-    public ResponseEntity<ResultResponse<Void>> updateAttendanceTarget(
-            UUID attendanceTargetId,
-            AttendanceTargetRequest.TargetRequest targetRequest,
-            CustomUserDetails customUserDetails) {
-
-        AttendanceTarget findTarget = attendanceTargetService.findById(attendanceTargetId);
-
-        Attendance findAttendance = attendanceService.findByUserIdAndAttendanceDate(
-                targetRequest.userId(), findTarget.getAttendanceDate());
-
-        findTarget.changeAttendanceDate(targetRequest.attendanceDate());
-        findAttendance.changeAttendanceDate(targetRequest.attendanceDate());
-
-
-        return ResultResponse.success();
-    }
-
-    @Transactional(readOnly = false)
     public ResponseEntity<ResultResponse<Void>> deleteAttendanceTarget(
             UUID attendanceTargetId, CustomUserDetails customUserDetails) {
 
         AttendanceTarget findTarget = attendanceTargetService.findById(attendanceTargetId);
-        attendanceTargetService.delete(findTarget);
+
+        AttendanceSetting attendanceSetting = attendanceSettingService.findAttendanceSetting();
+        LocalDateTime assignDateTime =
+                LocalDateTimeCreator.getNowLocalDateTimeToLocalTime(attendanceSetting.getAttendanceTime());
 
         Attendance findAttendance = attendanceService.findByUserIdAndAttendanceDate(
-                findTarget.getUser().getUserId(), findTarget.getAttendanceDate());
+                findTarget.getUser().getUserId(), assignDateTime);
 
-        attendanceService.delete(findAttendance);
+        if(findAttendance != null){
+            attendanceService.delete(findAttendance);
+        }
+
+        attendanceTargetService.delete(findTarget);
 
         return ResultResponse.deleteContent();
     }

@@ -14,8 +14,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthenticationUtil {
 
-    public static int accessTokenExpirationTime = 60;
-
     public static void sendResponseError(
             HttpServletResponse httpServletResponse
             , int statusCode

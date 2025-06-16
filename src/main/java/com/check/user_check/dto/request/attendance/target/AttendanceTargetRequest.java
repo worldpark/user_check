@@ -1,4 +1,4 @@
-package com.check.user_check.dto.request.target;
+package com.check.user_check.dto.request.attendance.target;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,11 +19,11 @@ public record AttendanceTargetRequest(
         public record TargetRequest(
                 @Schema(description = "대상자 고유 ID", example = "d72be5b0-2031-11f0-8337-bd8c4a471c40")
                 @NotNull(message = "존재하지 않은 계정입니다.")
-                UUID userId,
+                UUID userId
 
-                @NotNull(message = "날짜 정보가 정확하지 않습니다.")
-                @Schema(description = "예정 시간", example = "2025-05-05 08:00:00")
-                @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                LocalDateTime attendanceDate
+//                @NotNull(message = "날짜 정보가 정확하지 않습니다.")
+//                @Schema(description = "예정 시간", example = "2025-05-05 08:00:00")
+//                @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//                LocalDateTime attendanceDate
         ){}
 }

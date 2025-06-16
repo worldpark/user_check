@@ -1,8 +1,9 @@
 package com.check.user_check.service.response.basic;
 
 import com.check.user_check.entity.AttendanceTarget;
+import com.check.user_check.exception.custom.DataIntegrityViolationWithCodeException;
+import com.check.user_check.exception.custom.EntityNotFoundWithCodeException;
 import com.check.user_check.repository.AttendanceTargetRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -19,18 +20,7 @@ public class AttendanceTargetService {
 
     public AttendanceTarget findById(UUID attendanceTargetId){
         return attendanceTargetRepository.findById(attendanceTargetId)
-                .orElseThrow(() -> new EntityNotFoundException("해당하는 대상자가 존재하지 않습니다.|030301"));
-    }
-
-    public UUID save(AttendanceTarget attendanceTarget){
-        try{
-            return attendanceTargetRepository.save(attendanceTarget).getTargetId();
-
-        }catch (DataIntegrityViolationException dataIntegrityViolationException){
-            String message = dataIntegrityViolationException.getMessage();
-
-            throw new DataIntegrityViolationException(message + "|030302");
-        }
+                .orElseThrow(() -> new EntityNotFoundWithCodeException("해당하는 대상자가 존재하지 않습니다.", "030301"));
     }
 
     public List<UUID> saveAll(List<AttendanceTarget> attendanceTargets){
@@ -44,7 +34,7 @@ public class AttendanceTargetService {
         }catch (DataIntegrityViolationException dataIntegrityViolationException){
             String message = dataIntegrityViolationException.getMessage();
 
-            throw new DataIntegrityViolationException(message + "|030303");
+            throw new DataIntegrityViolationWithCodeException(message, "030303");
         }
     }
 

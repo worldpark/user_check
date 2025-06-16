@@ -11,18 +11,10 @@ import java.util.UUID;
 public interface AttendanceTargetRepository extends JpaRepository<AttendanceTarget, UUID> {
 
     @Query("""
-        SELECT at
+        SELECT at, u
         FROM AttendanceTarget at
         JOIN FETCH at.user u
-        JOIN FETCH at.assignedUser au
-    """)
-    Optional<AttendanceTarget> findById(UUID targetId);
-
-    @Query("""
-        SELECT at
-        FROM AttendanceTarget at
-        JOIN FETCH at.user u
-        JOIN FETCH at.assignedUser au
+        ORDER BY u.name, u.username
     """)
     List<AttendanceTarget> findAllFetch();
 

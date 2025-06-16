@@ -1,17 +1,17 @@
 package com.check.user_check.exception;
 
 import com.check.user_check.dto.ResultResponse;
+import com.check.user_check.exception.code.BaseExceptionCode;
 import com.check.user_check.exception.code.ClientExceptionCode;
 import com.check.user_check.exception.custom.CustomException;
-import jakarta.persistence.EntityNotFoundException;
+import com.check.user_check.exception.custom.DataIntegrityViolationWithCodeException;
+import com.check.user_check.exception.custom.EntityNotFoundWithCodeException;
+import com.check.user_check.exception.custom.UsernameNotFoundWithCodeException;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Map;
 
 @Log4j2
 @RestControllerAdvice
@@ -20,41 +20,37 @@ public class CustomExceptionHandler {
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<Object> customException(CustomException customException){
 
-        log.error("커스텀 에러 - ", customException.getErrorMessage());
+        log.error("customException message = {}", customException.getMessage());
+        log.error(customException);
 
-        return ResponseEntity.status(customException.getHttpStatus()).body(
-                Map.of(
-                        "message", customException.getErrorMessage(),
-                        "code", customException.getErrorCode()
-                )
-        );
+        return ResultResponse.error(customException.getBaseExceptionCode());
     }
 
-    private ResponseEntity<Object> messageWithCode(Exception exception){
-        String code = exception.getMessage().contains("|") ?
-                exception.getMessage().split("\\|")[1] : null;
+    private ResponseEntity<Object> messageWithCode(
+            Exception exception, String code, BaseExceptionCode baseExceptionCode){
 
-        String message = exception.getMessage().contains("|") ?
-                exception.getMessage().split("\\|")[0] : exception.getMessage();
+        String message = exception.getMessage();
+        log.error("message = {}, code = {}", message, code);
+        log.error(exception);
 
-        return ResultResponse.error(ClientExceptionCode.BAD_REQUEST, message, code);
+        return ResultResponse.error(baseExceptionCode, message, code);
     }
 
-    @ExceptionHandler(UsernameNotFoundException.class)
-    private ResponseEntity<Object> usernameNotFoundException(UsernameNotFoundException exception){
+    @ExceptionHandler(UsernameNotFoundWithCodeException.class)
+    private ResponseEntity<Object> UsernameNotFoundWithCodeException(UsernameNotFoundWithCodeException exception){
 
-        return messageWithCode(exception);
+        return messageWithCode(exception, exception.getCode(), ClientExceptionCode.BAD_REQUEST);
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    private ResponseEntity<Object> dataIntegrityViolationException(DataIntegrityViolationException exception){
+    @ExceptionHandler(DataIntegrityViolationWithCodeException.class)
+    private ResponseEntity<Object> DataIntegrityViolationWithCodeException(DataIntegrityViolationWithCodeException exception){
 
-        return messageWithCode(exception);
+        return messageWithCode(exception, exception.getCode(), ClientExceptionCode.BAD_REQUEST);
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    private ResponseEntity<Object> EntityNotFoundException(EntityNotFoundException exception){
-        return messageWithCode(exception);
+    @ExceptionHandler(EntityNotFoundWithCodeException.class)
+    private ResponseEntity<Object> entityNotFoundWithCodeException(EntityNotFoundWithCodeException exception){
+        return messageWithCode(exception, exception.getCode(), ClientExceptionCode.BAD_REQUEST);
     }
 
 }

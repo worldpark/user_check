@@ -35,19 +35,6 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
         Map<String, String> jsonData = AuthenticationUtil.parseRequestJSON(request);
 
-        if(jsonData.get("username") == null
-                || jsonData.get("username").isEmpty()
-                || jsonData.get("password") == null
-                || jsonData.get("password").isEmpty()
-        ){
-            AuthenticationUtil.sendResponseError(
-                    response,
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    "아이디 혹은 비밀번호가 누락되었습니다.",
-                    "010111"
-            );
-        }
-
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 new UsernamePasswordAuthenticationToken(
                         jsonData.get("username"),

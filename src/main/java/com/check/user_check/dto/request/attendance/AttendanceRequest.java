@@ -1,4 +1,4 @@
-package com.check.user_check.dto.request;
+package com.check.user_check.dto.request.attendance;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;

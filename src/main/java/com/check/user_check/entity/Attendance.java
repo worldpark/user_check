@@ -9,9 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.sql.Time;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -44,7 +42,7 @@ public class Attendance {
     private String memo;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -65,5 +63,18 @@ public class Attendance {
 
     public void changeAttendanceDate(LocalDateTime attendanceDate){
         this.attendanceDate = attendanceDate;
+    }
+
+    public String readAttendanceStatus(){
+
+        if(this.status == AttendanceStatus.PRESENT){
+            return "출석";
+        }else if(this.status == AttendanceStatus.LATE){
+            return "지각";
+        }else if(this.status == AttendanceStatus.ABSENT){
+            return "결석";
+        }else{
+            return "";
+        }
     }
 }

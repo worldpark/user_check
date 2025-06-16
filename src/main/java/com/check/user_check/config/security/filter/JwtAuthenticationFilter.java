@@ -10,6 +10,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -35,11 +36,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             , HttpServletResponse response
             , FilterChain filterChain) throws ServletException, IOException {
 
-
         String path = request.getRequestURI();
         if(
                 path.startsWith("/api/user/auth")
                 || path.startsWith("/docs")
+                || path.equals("/") || path.startsWith("/assets/")
+                || path.equals("/api/auth/validate-token")
+                || path.equals("/api/user/auth/refresh")
+                || path.startsWith("/admin") || path.startsWith("/user/") //front url
+//                || path.startsWith("/")
         ) {
             filterChain.doFilter(request, response);
             return;
@@ -98,6 +103,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = header.substring(7);
+
+//        String token = extractAccessTokenFromCookie(httpServletRequest);
         try {
             return jwtUtil.getTokenPayload(token);
         }catch (ExpiredJwtException e) {
@@ -107,5 +114,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (SignatureException e){
             throw new AccessTokenException(AccessTokenError.BAD_SIGN);
         }
+    }
+
+
+
+    private String extractAccessTokenFromCookie(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("accessToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+
+        throw new AccessTokenException(AccessTokenError.UNACCEPTABLE);
     }
 }

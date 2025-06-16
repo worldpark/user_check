@@ -1,4 +1,4 @@
-package com.check.user_check.dto.request;
+package com.check.user_check.dto.request.attendance;
 
 import com.check.user_check.enumeratedType.AttendanceStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;

@@ -41,8 +41,9 @@ public class User extends BaseEntity{
     @OneToMany(mappedBy = "assignedUser", cascade = CascadeType.REMOVE)
     private List<AttendanceTarget> assignTargets;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
-    private List<AttendanceTarget> attendanceTargets;
+    //LAZY가 적용되지 않아 연관관계 단방향으로 변경
+//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private AttendanceTarget attendanceTarget;
 
     public User(UUID userId) {
         this.userId = userId;

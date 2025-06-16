@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -20,7 +21,7 @@ import java.util.UUID;
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "attendanceTargetUnique",
-                        columnNames = {"attendance_date", "user_id"}
+                        columnNames = {"user_id"}
                 )
         }
 )
@@ -29,14 +30,11 @@ public class AttendanceTarget extends BaseEntity{
     @Id
     private UUID targetId;
 
-    @NotNull
-    private LocalDateTime attendanceDate;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_by")
     private User assignedUser;
 
-    @ManyToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -45,9 +43,5 @@ public class AttendanceTarget extends BaseEntity{
         if (targetId == null) {
             targetId = UUIDv6Generator.generate();
         }
-    }
-
-    public void changeAttendanceDate(LocalDateTime attendanceDate){
-        this.attendanceDate = attendanceDate;
     }
 }

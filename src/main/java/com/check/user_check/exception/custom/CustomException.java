@@ -1,20 +1,15 @@
 package com.check.user_check.exception.custom;
 
+import com.check.user_check.exception.code.BaseExceptionCode;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 
 @Getter
 public class CustomException extends RuntimeException{
+    private final BaseExceptionCode baseExceptionCode;
 
-    private final HttpStatus httpStatus;
-    private final String errorCode;
-    private final String errorMessage;
-
-    public CustomException(HttpStatus httpStatus, String errorCode, String errorMessage){
-        super("CustomException");
-        this.httpStatus = httpStatus;
-        this.errorMessage = errorMessage;
-        this.errorCode = errorCode;
+    public CustomException(BaseExceptionCode baseExceptionCode){
+        super(baseExceptionCode.getError().message());
+        this.baseExceptionCode = baseExceptionCode;
     }
 
 }

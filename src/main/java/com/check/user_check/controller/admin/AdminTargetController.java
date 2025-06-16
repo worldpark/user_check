@@ -4,10 +4,11 @@ import com.check.user_check.config.security.CustomUserDetails;
 import com.check.user_check.config.swagger.annotation.ResultCreatedListResponse;
 import com.check.user_check.config.swagger.annotation.ResultUpdateAndDeleteResponse;
 import com.check.user_check.dto.ResultResponse;
-import com.check.user_check.dto.request.target.AttendanceTargetRequest;
+import com.check.user_check.dto.request.attendance.target.AttendanceTargetRequest;
 import com.check.user_check.dto.response.admin.AttendanceTargetResponse;
 import com.check.user_check.service.response.admin.AdminTargetResponseService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+
+@Tag(name = "AttendanceTarget", description = "출석 대상 정보 어드민 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/attendance-target")
@@ -39,18 +42,6 @@ public class AdminTargetController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails){
 
         return adminTargetResponseService.createAttendanceTarget(targetListCreateRequests, customUserDetails);
-    }
-
-    @Operation(summary = "출결 대상 수정")
-    @ResultUpdateAndDeleteResponse
-    @PutMapping("/{attendanceTargetId}")
-    public ResponseEntity<ResultResponse<Void>> updateAttendanceTarget(
-            @PathVariable UUID attendanceTargetId,
-            @RequestBody @Valid AttendanceTargetRequest.TargetRequest attendanceTargetRequest,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
-    ){
-        return adminTargetResponseService.updateAttendanceTarget(
-                attendanceTargetId, attendanceTargetRequest, customUserDetails);
     }
 
     @Operation(summary = "출결 대상 삭제")
