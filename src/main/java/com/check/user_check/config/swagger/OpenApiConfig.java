@@ -1,7 +1,6 @@
 package com.check.user_check.config.swagger;
 
 import com.check.user_check.config.swagger.path.LoginPathItem;
-import com.check.user_check.config.swagger.path.RefreshPathItem;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Paths;
@@ -30,12 +29,11 @@ public class OpenApiConfig {
                 );
 
         Info info = new Info()
-                .title("웹 실기 API")
+                .title("출결 API")
                 .version("1");
 
         Paths paths = new Paths()
-                .addPathItem("/api/user/auth/login", new LoginPathItem().build())
-                .addPathItem("/api/user/auth/refresh", new RefreshPathItem().build());
+                .addPathItem("/api/user/auth/login", new LoginPathItem().build());
 
         return new OpenAPI()
                 .addSecurityItem(securityRequirement)

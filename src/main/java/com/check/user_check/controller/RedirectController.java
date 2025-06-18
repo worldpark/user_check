@@ -11,18 +11,9 @@ public class RedirectController {
         return "forward:/index.html";
     }
 
-    @GetMapping("/admin/**")
-    public String adminForwardSubPaths(){
-        return "forward:/index.html";
-    }
 
     @GetMapping("/user")
     public String userForward(){
-        return "forward:/index.html";
-    }
-
-    @GetMapping("/user/**")
-    public String userForwardSubPaths(){
         return "forward:/index.html";
     }
 }

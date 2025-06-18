@@ -9,7 +9,9 @@ import com.check.user_check.config.security.handler.CustomAccessDeniedHandler;
 import com.check.user_check.config.security.handler.LoginFailureHandler;
 import com.check.user_check.config.security.handler.LoginSuccessHandler;
 import com.check.user_check.config.security.util.JWTUtil;
+import com.check.user_check.service.response.basic.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -38,6 +40,14 @@ import java.util.List;
 public class SecurityConfig {
     private final JWTUtil jwtUtil;
 
+    private final RefreshTokenService refreshTokenService;
+
+    @Value("${access-token-expiration-time}")
+    private int accessTokenExpirationTime;
+
+    @Value("${refresh-token-expiration-time}")
+    private int refreshTokenExpirationTime;
+
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final AuthenticationEntryPointHandler authenticationEntryPointHandler;
 
@@ -56,7 +66,8 @@ public class SecurityConfig {
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
         LoginFilter loginFilter = new LoginFilter("/api/user/auth/login");
-        LoginSuccessHandler loginSuccessHandler = new LoginSuccessHandler(jwtUtil);
+        LoginSuccessHandler loginSuccessHandler = new LoginSuccessHandler(
+                jwtUtil, accessTokenExpirationTime, refreshTokenExpirationTime, refreshTokenService);
         LoginFailureHandler loginFailureHandler = new LoginFailureHandler();
 
         loginFilter.setAuthenticationManager(authenticationManager);
@@ -67,17 +78,13 @@ public class SecurityConfig {
                 .csrf(csrfConfig -> csrfConfig.disable())
                 .formLogin(loginForm -> loginForm.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
-                .headers((headerConfig) ->headerConfig
-                        .contentSecurityPolicy(csp -> csp
-                                .policyDirectives(
-                                                "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self';"
-                                )
-                        )
-                )
                 .authorizeHttpRequests(auth -> auth
-                        //.requestMatchers("/**").permitAll()
                         .requestMatchers("/api/user/auth/**",
-                                "/docs/**"
+                                "/docs/**", "/"
+                                , "/index.html", "/assets/**", "/api/auth/validate-token"
+                                , "/api/user/auth/refresh"
+                                , "/admin/**", "/user/**"   //front 페이지 url
+//                                , "/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -92,7 +99,10 @@ public class SecurityConfig {
                 .authenticationManager(authenticationManager)
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new RefreshTokenFilter("/api/user/auth/refresh", jwtUtil)
+                .addFilterBefore(new RefreshTokenFilter(
+                        "/api/user/auth/refresh",
+                                jwtUtil, refreshTokenExpirationTime, accessTokenExpirationTime,
+                                refreshTokenService)
                         , JwtAuthenticationFilter.class);
 
         return httpSecurity.build();
@@ -124,7 +134,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:5173");
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:5173", "http://192.168.0.8:8081", "https://worldpark.github.io"));
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);

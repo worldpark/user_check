@@ -1,16 +1,15 @@
 package com.check.user_check.dto.response.admin;
 
+import lombok.Builder;
 
-import com.check.user_check.enumeratedType.AttendanceAuth;
-import com.check.user_check.enumeratedType.TargetStatus;
-
+import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Builder
 public record AttendanceTargetResponse(
-        UUID uid,
-        String userId,
-        String userName,
-        AttendanceAuth auth,
-        TargetStatus targetStatus
+        UUID targetId,
+        LocalDateTime createAt,
+        String username,
+        String name
 ) {
 }

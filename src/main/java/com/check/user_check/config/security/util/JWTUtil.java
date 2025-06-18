@@ -1,8 +1,12 @@
 package com.check.user_check.config.security.util;
 
+import com.check.user_check.enumeratedType.TokenValid;
+import com.check.user_check.exception.token.accesstoken.AccessTokenError;
+import com.check.user_check.exception.token.accesstoken.AccessTokenException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -36,6 +40,22 @@ public class JWTUtil {
 
     public Map<String, Object> getTokenPayload(String token) throws JwtException{
 
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public TokenValid validateToken(String token) {
+
+        try{
+            getTokenPayload(token);
+            return TokenValid.CORRECT;
+        }catch (ExpiredJwtException exception){
+            return TokenValid.EXPIRE;
+        }catch (JwtException | IllegalArgumentException exception) {
+            return TokenValid.WRONG;
+        }
     }
 }

@@ -1,118 +1,105 @@
 package com.check.user_check.service.response.admin;
 
-import com.check.user_check.config.security.CustomUserDetails;
 import com.check.user_check.dto.ResultResponse;
-import com.check.user_check.dto.request.AttendanceCreateRequest;
-import com.check.user_check.dto.request.AttendanceUpdateRequest;
-import com.check.user_check.dto.response.admin.AttendanceResponse;
+import com.check.user_check.dto.request.attendance.AttendanceUpdateRequest;
+import com.check.user_check.dto.response.admin.AttendanceSummaryResponse;
+import com.check.user_check.dto.response.common.AttendanceResponse;
 import com.check.user_check.entity.Attendance;
-import com.check.user_check.entity.AttendanceTarget;
-import com.check.user_check.entity.User;
 import com.check.user_check.service.response.basic.AttendanceService;
-import com.check.user_check.service.response.basic.AttendanceTargetService;
-import com.check.user_check.service.response.basic.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AdminAttendanceResponseService {
 
     private final AttendanceService attendanceService;
-    private final AttendanceTargetService attendanceTargetService;
-    private final UserService userService;
 
-    private boolean authCheck(UUID attendanceId, List<Attendance> attendances){
+    public ResponseEntity<Page<AttendanceResponse>> readAttendances(LocalDateTime dateTime, Pageable pageable){
 
-        for(Attendance attendance : attendances){
-            if(attendanceId.equals(attendance.getAttendanceId())){
-                return true;
+        LocalDateTime nowDateTime = LocalDateTime.now();
+
+        LocalDateTime startOfDay = dateTime.toLocalDate().atStartOfDay();
+        LocalDateTime startOfNextDay = dateTime.toLocalDate().plusDays(1).atStartOfDay();
+        Page<Attendance> result = attendanceService.findAllByDateTime(startOfDay, startOfNextDay, pageable);
+
+        LocalDate today = LocalDate.now();
+        LocalDateTime minTime = today.atStartOfDay();
+
+        Page<AttendanceResponse> resultDatas = result.map(attendance -> {
+
+            String readStatus = attendance.readAttendanceStatus();
+            LocalDateTime attendanceDate = attendance.getAttendanceDate();
+
+            if(readStatus.equals("결석") && minTime.isBefore(attendanceDate)){
+                if(nowDateTime.isAfter(attendanceDate)){
+                    readStatus = "지각";
+                }else{
+                    readStatus = "미출석";
+                }
             }
-        }
-        throw new RuntimeException("권한이 없는 출결입니다.");
-    }
 
-    public ResponseEntity<List<AttendanceResponse>> readAttendances(CustomUserDetails customUserDetails){
+            String checkTime = "";
+            if(attendance.getCheckTime() != null){
+                checkTime = attendance.getCheckTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+            }
 
-        UUID userId = customUserDetails.getUserUuid();
-        User user = userService.findById(userId);
-        List<Attendance> attendances = attendanceService.findAllByUser(user);
+            return AttendanceResponse.builder()
+                    .attendanceId(attendance.getAttendanceId())
+                    .attendanceDate(attendanceDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                    .checkTime(checkTime)
+                    .status(readStatus)
+                    .userId(attendance.getUser().getUserId())
+                    .username(attendance.getUser().getUsername())
+                    .name(attendance.getUser().getName())
+                    .build();
+        });
 
         return ResponseEntity.ok(
-                attendances.stream()
-                        .map(attendance -> AttendanceResponse.builder()
-                                .attendanceId(attendance.getAttendanceId())
-                                .attendanceName(attendance.getAttendanceName())
-                                .build())
-                        .collect(Collectors.toList())
+                resultDatas
         );
     }
 
-    @Transactional
-    public ResponseEntity<ResultResponse<UUID>> createAttendance(AttendanceCreateRequest attendanceCreateRequest,
-                                                                 CustomUserDetails customUserDetails){
+    @Transactional(readOnly = false)
+    public ResponseEntity<ResultResponse<Void>> updateAttendances(
+            UUID attendanceId, AttendanceUpdateRequest updateRequest){
 
-        UUID userId = customUserDetails.getUserUuid();
-        User user = userService.findById(userId);
-
-        Attendance attendance = Attendance.builder()
-                .attendanceName(attendanceCreateRequest.attendanceName())
-                .build();
-
-        Attendance result = attendanceService.save(attendance);
-
-        AttendanceTarget attendanceTarget = AttendanceTarget.builder()
-                .attendance(result)
-                .user(user)
-                .build();
-
-        attendanceTargetService.save(attendanceTarget);
-
-        return ResultResponse.created(result.getAttendanceId());
-    }
-
-    @Transactional
-    public ResponseEntity<ResultResponse<Void>> updateAttendances(AttendanceUpdateRequest updateRequest,
-                                                                  CustomUserDetails customUserDetails){
-
-        UUID userId = customUserDetails.getUserUuid();
-        User user = userService.findById(userId);
-
-        List<Attendance> attendances = attendanceService.findAllByUser(user);
-        authCheck(updateRequest.attendanceId(), attendances);
-
-        Attendance attendance = Attendance.builder()
-                .attendanceId(updateRequest.attendanceId())
-                .attendanceName(updateRequest.attendanceName())
-                .build();
-
-        attendanceService.save(attendance);
+        Attendance findAttendance = attendanceService.findById(attendanceId);
+        findAttendance.changeStatus(updateRequest.status());
+        findAttendance.changeCheckTime(updateRequest.checkTime());
 
         return ResultResponse.success();
     }
 
-    @Transactional
-    public ResponseEntity<ResultResponse<Void>> deleteAttendance(UUID attendanceId,
-                                                                 CustomUserDetails customUserDetails){
+    public ResponseEntity<AttendanceSummaryResponse> readAttendanceSummary(LocalDateTime dateTime) {
 
-        UUID userId = customUserDetails.getUserUuid();
-        User user = userService.findById(userId);
-        List<Attendance> attendances = attendanceService.findAllByUser(user);
+        LocalDateTime startOfDay = dateTime.toLocalDate().atStartOfDay();
+        LocalDateTime startOfNextDay = dateTime.toLocalDate().plusDays(1).atStartOfDay();
 
-        authCheck(attendanceId, attendances);
+        AttendanceSummaryResponse attendanceSummaryResponse = new AttendanceSummaryResponse(
+                new AttendanceSummaryResponse.SummaryData("text-black", "전체 인원"),
+                new AttendanceSummaryResponse.SummaryData("text-blue-500", "출석 인원"),
+                new AttendanceSummaryResponse.SummaryData("text-red-500", "결석 인원"));
 
-        Attendance attendance = attendanceService.findById(attendanceId);
+        Long countIsCheck = attendanceService.findCountIsCheck(startOfDay, startOfNextDay);
+        Long countNoCheck = attendanceService.findCountNoCheck(startOfDay, startOfNextDay);
 
-        attendanceTargetService.deleteAllByAttendance(attendance);
-        attendanceService.delete(attendance);
+        attendanceSummaryResponse.presentData().setValue(countIsCheck);
+        attendanceSummaryResponse.absentData().setValue(countNoCheck);
+        attendanceSummaryResponse.totalData().setValue(countIsCheck + countNoCheck);
 
-
-        return ResultResponse.deleteContent();
+        return ResponseEntity.ok(
+                attendanceSummaryResponse
+        );
     }
 }

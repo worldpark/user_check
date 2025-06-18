@@ -1,7 +1,8 @@
 server:
-  port: 8081
+  port: 80
 
   application:
+
     name: user_check
 
 spring:
@@ -12,7 +13,14 @@ spring:
       hibernate:
         show_sql: true
         dialect: org.hibernate.dialect.MariaDBDialect
+        format_sql: true
+        default_batch_fetch_size: 100
     generate-ddl: true
     defer-datasource-initialization: true
     open-in-view: false
 
+
+
+#logging:
+#  level:
+#    org.hibernate.orm.jdbc.bind: trace

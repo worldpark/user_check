@@ -1,7 +1,5 @@
 package com.check.user_check.entity;
 
-import com.check.user_check.enumeratedType.AttendanceAuth;
-import com.check.user_check.enumeratedType.TargetStatus;
 import com.check.user_check.util.UUIDv6Generator;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -9,7 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -17,30 +17,26 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AttendanceTarget {
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "attendanceTargetUnique",
+                        columnNames = {"user_id"}
+                )
+        }
+)
+public class AttendanceTarget extends BaseEntity{
 
     @Id
     private UUID targetId;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private AttendanceAuth auth;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private TargetStatus targetStatus;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "uid")
+    @JoinColumn(name = "assigned_by")
+    private User assignedUser;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "attendance_id")
-    private Attendance attendance;
-
-    public void setAttendance(Attendance attendance) {
-        this.attendance = attendance;
-    }
 
     @PrePersist
     public void prePersist() {

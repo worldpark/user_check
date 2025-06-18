@@ -19,7 +19,7 @@ public class LoginPathItem {
         Gson gson = new Gson();
         String requestExample = gson.toJson(
                 Map.of(
-                        "userId", "userId",
+                        "username", "username",
                         "password", "password"
                 )
         );
@@ -28,7 +28,7 @@ public class LoginPathItem {
                 .content(new Content().addMediaType(
                         org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
                         new MediaType().schema(new Schema<Map<String, String>>()
-                                .addProperty("userId", new Schema<String>())
+                                .addProperty("username", new Schema<String>())
                                 .addProperty("password", new Schema<String>())
                                 .example(requestExample)
                         ))
@@ -40,9 +40,6 @@ public class LoginPathItem {
                         "data", Map.of(
                                 "accessToken", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMj" +
                                         "M0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdC" +
-                                        "I6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30",
-                                "refreshToken", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMj"+
-                                        "M0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdC"+
                                         "I6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30"
                         )
                 )
@@ -57,15 +54,8 @@ public class LoginPathItem {
 
         String MethodNotAllowedExample = gson.toJson(
                 Map.of(
-                        "code", "010109",
+                        "code", "010110",
                         "message", "인증시 해당 메소드는 지원하지 않습니다."
-                )
-        );
-
-        String BadRequestExample = gson.toJson(
-                Map.of(
-                        "code","010110",
-                        "message","아이디 혹은 비밀번호가 누락되었습니다"
                 )
         );
 
@@ -78,7 +68,6 @@ public class LoginPathItem {
                                                 .addProperty("message", new Schema<String>())
                                                 .addProperty("data", new Schema<Map<String, String>>()
                                                         .addProperty("accessToken", new Schema<String>())
-                                                        .addProperty("refreshToken", new Schema<String>())
                                                 )
                                                 .example(successResponseExample)
                                         )
@@ -94,18 +83,6 @@ public class LoginPathItem {
                                                         .addProperty("message", new Schema<String>())
                                                 )
                                                 .example(NotFoundResponseExample)
-                                )
-                        )
-                )
-                .addApiResponse("400", new ApiResponse()
-                        .description("요청 키 값이 잘못됨")
-                        .content(new Content()
-                                .addMediaType(org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
-                                        new MediaType().schema(new Schema<Map<String, String>>()
-                                                        .addProperty("code", new Schema<Integer>())
-                                                        .addProperty("message", new Schema<String>())
-                                                )
-                                                .example(BadRequestExample)
                                 )
                         )
                 )

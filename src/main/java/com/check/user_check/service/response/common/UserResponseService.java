@@ -8,6 +8,7 @@ import com.check.user_check.dto.request.UserUpdateRequest;
 import com.check.user_check.dto.response.UserListResponse;
 import com.check.user_check.dto.response.user.UserResponse;
 import com.check.user_check.entity.User;
+import com.check.user_check.exception.code.ClientExceptionCode;
 import com.check.user_check.exception.custom.CustomException;
 import com.check.user_check.service.response.basic.UserService;
 import lombok.RequiredArgsConstructor;
@@ -29,15 +30,15 @@ public class UserResponseService {
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
 
-    private void authCheck(UUID id, CustomUserDetails customUserDetails){
+    private void authCheck(UUID userId, CustomUserDetails customUserDetails){
         List<String> currentRoles = customUserDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
         String currentRole = currentRoles.get(0);
 
-        if(currentRole.equals(Role.ROLE_USER.getRoleName()) && !customUserDetails.getUserUuid().equals(id)){
-            throw new CustomException(HttpStatus.UNAUTHORIZED, "000001", "허용되지 않은 요청");
+        if(currentRole.equals(Role.ROLE_USER.getRoleName()) && !customUserDetails.getUserId().equals(userId)){
+            throw new CustomException(ClientExceptionCode.BAD_REQUEST);
         }
     }
 
@@ -48,12 +49,26 @@ public class UserResponseService {
         return ResponseEntity.ok(
                 UserListResponse.builder()
                         .users(users.stream().map(user -> UserResponse.builder()
-                                        .uid(user.getUid())
                                         .userId(user.getUserId())
-                                        .userName(user.getUserName())
+                                        .username(user.getUsername())
+                                        .name(user.getName())
                                         .role(user.getRole())
                                         .build())
                                 .collect(Collectors.toList()))
+                        .build()
+        );
+    }
+
+    public ResponseEntity<UserResponse> readLoginInfo(CustomUserDetails customUserDetails){
+
+        User user = userService.findById(customUserDetails.getUserId());
+
+        return ResponseEntity.ok(
+                UserResponse.builder()
+                        .userId(user.getUserId())
+                        .username(user.getUsername())
+                        .name(user.getName())
+                        .role(user.getRole())
                         .build()
         );
     }
@@ -65,9 +80,9 @@ public class UserResponseService {
 
         return ResponseEntity.ok(
                 UserResponse.builder()
-                        .uid(user.getUid())
                         .userId(user.getUserId())
-                        .userName(user.getUserName())
+                        .username(user.getUsername())
+                        .name(user.getName())
                         .role(user.getRole())
                         .build()
         );
@@ -79,9 +94,9 @@ public class UserResponseService {
         String password = passwordEncoder.encode(userCreateRequest.password());
 
         User user = User.builder()
-                .userName(userCreateRequest.userName())
+                .username(userCreateRequest.username())
                 .password(password)
-                .userId(userCreateRequest.userId())
+                .name(userCreateRequest.name())
                 .role(userCreateRequest.role())
                 .build();
 
@@ -92,20 +107,13 @@ public class UserResponseService {
 
     @Transactional
     public ResponseEntity<ResultResponse<Void>> updateUser(
-            UserUpdateRequest userUpdateRequest
-            , CustomUserDetails customUserDetails
+            UserUpdateRequest userUpdateRequest,
+            CustomUserDetails customUserDetails
     ){
-        UUID uid = userUpdateRequest.uid();
-        authCheck(uid, customUserDetails);
-
         String password = passwordEncoder.encode(userUpdateRequest.password());
-        User user = User.builder()
-                .uid(uid)
-                .password(password)
-                .userName(userUpdateRequest.userName())
-                .role(userUpdateRequest.role())
-                .build();
+        User user = userService.findById(customUserDetails.getUserId());
 
+        user.changeInfo(password, userUpdateRequest.name(), userUpdateRequest.role());
         userService.save(user);
 
         return ResultResponse.success();
@@ -113,12 +121,27 @@ public class UserResponseService {
 
     @Transactional
     public ResponseEntity<ResultResponse<Void>> deleteUser(
-            UUID id,
             CustomUserDetails customUserDetails){
 
-        authCheck(id, customUserDetails);
-
-        userService.delete(id);
+        userService.delete(customUserDetails.getUserId());
         return ResultResponse.deleteContent();
+    }
+
+    public ResponseEntity<UserListResponse> getNoTargetUsers(){
+
+        List<User> userByNotAttendanceTarget = userService.findByNotAttendanceTarget();
+
+        return ResponseEntity.ok(
+                UserListResponse.builder()
+                        .users(userByNotAttendanceTarget.stream()
+                                .map(user -> UserResponse.builder()
+                                        .userId(user.getUserId())
+                                        .username(user.getUsername())
+                                        .name(user.getName())
+                                        .role(user.getRole())
+                                        .build())
+                                .collect(Collectors.toList()))
+                        .build()
+        );
     }
 }

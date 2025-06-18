@@ -2,11 +2,12 @@ package com.check.user_check.service.response.basic;
 
 import com.check.user_check.aop.logtrace.annotation.NoLog;
 import com.check.user_check.entity.User;
+import com.check.user_check.exception.custom.DataIntegrityViolationWithCodeException;
+import com.check.user_check.exception.custom.UsernameNotFoundWithCodeException;
 import com.check.user_check.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,8 +20,8 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    private UsernameNotFoundException userNotFound(){
-        throw new UsernameNotFoundException("계정 정보를 찾지 못했습니다.|010302");
+    private UsernameNotFoundWithCodeException userNotFound(){
+        throw new UsernameNotFoundWithCodeException("계정 정보를 찾지 못했습니다.", "020301");
     }
 
     public User findById(UUID id){
@@ -29,8 +30,8 @@ public class UserService {
     }
 
     @NoLog
-    public User findByUserId(String userId){
-        return userRepository.findByUserId(userId)
+    public User findByUsername(String username){
+        return userRepository.findByUsername(username)
                 .orElseThrow(this::userNotFound);
     }
 
@@ -40,15 +41,20 @@ public class UserService {
 
     public UUID save(User user){
         try{
-            return userRepository.save(user).getUid();
+            return userRepository.save(user).getUserId();
         }catch (DataIntegrityViolationException dataIntegrityViolationException){
             String message = dataIntegrityViolationException.getMessage();
 
-            throw new DataIntegrityViolationException(message + "|010302");
+            throw new DataIntegrityViolationWithCodeException(message, "020302");
         }
     }
 
     public void delete(UUID id){
         userRepository.deleteById(id);
+    }
+
+    public List<User> findByNotAttendanceTarget(){
+
+        return userRepository.findByAttendanceTargets(null);
     }
 }

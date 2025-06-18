@@ -1,12 +1,43 @@
 package com.check.user_check.controller.user;
 
+import com.check.user_check.config.security.CustomUserDetails;
+import com.check.user_check.config.swagger.annotation.ResultUpdateAndDeleteResponse;
+import com.check.user_check.dto.ResultResponse;
+import com.check.user_check.dto.response.common.ListAttendanceResponse;
 import com.check.user_check.service.response.user.UserAttendanceResponseService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
+
+@Tag(name = "AttendanceUser", description = "출결 기록 유저 API")
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/api/attendance")
 public class UserAttendanceController {
 
     private final UserAttendanceResponseService attendanceResponseService;
+
+    @Operation(summary = "출결 정보 조회")
+    @GetMapping
+    public ResponseEntity<ListAttendanceResponse> readUserAttendanceList(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ){
+        return attendanceResponseService.readUserAttendanceList(customUserDetails);
+    }
+
+    @Operation(summary = "출결 정보 수정")
+    @PutMapping("/{attendanceId}")
+    @ResultUpdateAndDeleteResponse
+    public ResponseEntity<ResultResponse<Void>> checkAttendance(
+            @PathVariable UUID attendanceId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ){
+        return attendanceResponseService.checkAttendance(attendanceId, customUserDetails);
+    }
 }
