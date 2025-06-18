@@ -10,6 +10,7 @@ import com.check.user_check.entity.User;
 import com.check.user_check.service.response.basic.AttendanceService;
 import com.check.user_check.service.response.basic.AttendanceSettingService;
 import com.check.user_check.util.LocalDateTimeCreator;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,8 @@ public class AttendanceSettingResponseService {
 
     private final AttendanceSettingService attendanceSettingService;
     private final AttendanceService attendanceService;
+
+    private final EntityManager entityManager;
 
     public ResponseEntity<AttendanceSettingResponse> getAttendanceSetting(){
         AttendanceSetting attendanceSetting = attendanceSettingService.findAttendanceSetting();
@@ -47,6 +50,8 @@ public class AttendanceSettingResponseService {
 
         AttendanceSetting attendanceSetting = attendanceSettingService.findAttendanceSetting();
         attendanceSetting.changeAttendanceTime(timeSettingRequest.attendanceTime(), user);
+        entityManager.flush();
+        entityManager.clear();
 
         LocalDate today = LocalDate.now();
 

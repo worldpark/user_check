@@ -29,9 +29,8 @@ public class AdminTargetController {
 
     @Operation(summary = "출결 대상자 목록")
     @GetMapping
-    public ResponseEntity<List<AttendanceTargetResponse>> readAttendanceTarget(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails){
-        return adminTargetResponseService.readAttendanceTarget(customUserDetails);
+    public ResponseEntity<List<AttendanceTargetResponse>> readAttendanceTarget(){
+        return adminTargetResponseService.readAttendanceTarget();
     }
 
     @Operation(summary = "출결 대상자 생성")
@@ -48,9 +47,8 @@ public class AdminTargetController {
     @DeleteMapping("/{attendanceTargetId}")
     @ResultUpdateAndDeleteResponse
     public ResponseEntity<ResultResponse<Void>> deleteAttendanceTarget(
-            @PathVariable UUID attendanceTargetId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
+            @PathVariable UUID attendanceTargetId
     ){
-        return adminTargetResponseService.deleteAttendanceTarget(attendanceTargetId, customUserDetails);
+        return adminTargetResponseService.deleteAttendanceTarget(attendanceTargetId);
     }
 }

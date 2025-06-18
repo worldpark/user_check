@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,6 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Table(name = "users")
 public class User extends BaseEntity{
 
     @Id
@@ -36,14 +38,18 @@ public class User extends BaseEntity{
     private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
-    private List<Attendance> attendances;
+    private List<Attendance> attendances = new ArrayList<>();
 
     @OneToMany(mappedBy = "assignedUser", cascade = CascadeType.REMOVE)
-    private List<AttendanceTarget> assignTargets;
+    private List<AttendanceTarget> assignTargets = new ArrayList<>();
 
-    //LAZY가 적용되지 않아 연관관계 단방향으로 변경
-//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private AttendanceTarget attendanceTarget;
+    public User(UUID userId, String username, String password, String name, Role role) {
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.role = role;
+    }
 
     public User(UUID userId) {
         this.userId = userId;

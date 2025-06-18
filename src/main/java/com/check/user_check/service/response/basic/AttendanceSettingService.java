@@ -1,10 +1,14 @@
 package com.check.user_check.service.response.basic;
 
 import com.check.user_check.entity.AttendanceSetting;
+import com.check.user_check.exception.custom.DataIntegrityViolationWithCodeException;
 import com.check.user_check.exception.custom.EntityNotFoundWithCodeException;
 import com.check.user_check.repository.AttendanceSettingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +24,16 @@ public class AttendanceSettingService {
         }
 
         return result;
+    }
+
+    public UUID save(AttendanceSetting attendanceSetting){
+        try{
+            return attendanceSettingRepository.save(attendanceSetting).getInfoId();
+        }catch (DataIntegrityViolationException dataIntegrityViolationException){
+            String message = dataIntegrityViolationException.getMessage();
+
+            throw new DataIntegrityViolationWithCodeException(message, "050302");
+        }
     }
 
 }

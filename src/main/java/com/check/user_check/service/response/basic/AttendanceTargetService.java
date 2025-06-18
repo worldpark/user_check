@@ -20,7 +20,7 @@ public class AttendanceTargetService {
 
     public AttendanceTarget findById(UUID attendanceTargetId){
         return attendanceTargetRepository.findById(attendanceTargetId)
-                .orElseThrow(() -> new EntityNotFoundWithCodeException("해당하는 대상자가 존재하지 않습니다.", "030301"));
+                .orElseThrow(() -> new EntityNotFoundWithCodeException("해당하는 대상자가 존재하지 않습니다.", "040301"));
     }
 
     public List<UUID> saveAll(List<AttendanceTarget> attendanceTargets){
@@ -34,7 +34,7 @@ public class AttendanceTargetService {
         }catch (DataIntegrityViolationException dataIntegrityViolationException){
             String message = dataIntegrityViolationException.getMessage();
 
-            throw new DataIntegrityViolationWithCodeException(message, "030303");
+            throw new DataIntegrityViolationWithCodeException(message, "040302");
         }
     }
 

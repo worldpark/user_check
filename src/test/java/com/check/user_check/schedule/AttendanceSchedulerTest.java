@@ -1,6 +1,7 @@
 package com.check.user_check.schedule;
 
 
+import com.check.user_check.service.response.basic.AttendanceService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +15,9 @@ class AttendanceSchedulerTest {
 
     @Autowired
     private AttendanceScheduler attendanceScheduler;
+
+    @Autowired
+    private AttendanceService attendanceService;
 
     @Test
     void insertAttendance(){

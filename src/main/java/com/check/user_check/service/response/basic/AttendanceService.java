@@ -23,13 +23,13 @@ public class AttendanceService {
 
     public Attendance findById(UUID attendanceId){
         return attendanceRepository.findById(attendanceId)
-                .orElseThrow(() -> new EntityNotFoundWithCodeException("해당하는 출결이 존재하지 않습니다.", "020301"));
+                .orElseThrow(() -> new EntityNotFoundWithCodeException("해당하는 출결이 존재하지 않습니다.", "030301"));
     }
 
     public Attendance findFetchByAttendanceId(UUID attendanceId){
 
         return attendanceRepository.findFetchByAttendanceId(attendanceId)
-                .orElseThrow(() -> new EntityNotFoundWithCodeException("해당하는 출결이 존재하지 않습니다.", "020301"));
+                .orElseThrow(() -> new EntityNotFoundWithCodeException("해당하는 출결이 존재하지 않습니다.", "030301"));
     }
 
     public UUID save(Attendance attendance){
@@ -38,7 +38,7 @@ public class AttendanceService {
         }catch (DataIntegrityViolationException dataIntegrityViolationException){
             String message = dataIntegrityViolationException.getMessage();
 
-            throw new DataIntegrityViolationWithCodeException(message, "020302");
+            throw new DataIntegrityViolationWithCodeException(message, "030302");
         }
     }
 
@@ -54,7 +54,7 @@ public class AttendanceService {
         }catch (DataIntegrityViolationException dataIntegrityViolationException){
             String message = dataIntegrityViolationException.getMessage();
 
-            throw new DataIntegrityViolationWithCodeException(message, "020303");
+            throw new DataIntegrityViolationWithCodeException(message, "030303");
         }
     }
 

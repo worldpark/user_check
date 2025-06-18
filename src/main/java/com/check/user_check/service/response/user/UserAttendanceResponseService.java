@@ -11,7 +11,6 @@ import com.check.user_check.exception.code.ServerExceptionCode;
 import com.check.user_check.exception.custom.CustomException;
 import com.check.user_check.service.response.basic.AttendanceService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -74,7 +73,6 @@ public class UserAttendanceResponseService {
 
         int resultSize = userAttendance.size();
         if(resultSize != 1 ){
-
             throw new CustomException(ServerExceptionCode.INTERNAL_SERVER_ERROR);
         }
 

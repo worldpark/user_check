@@ -5,7 +5,6 @@ import com.check.user_check.config.swagger.annotation.ResultUpdateAndDeleteRespo
 import com.check.user_check.dto.ResultResponse;
 import com.check.user_check.dto.request.attendance.setting.PositionSettingRequest;
 import com.check.user_check.dto.request.attendance.setting.TimeSettingRequest;
-import com.check.user_check.dto.response.admin.AttendanceSettingResponse;
 import com.check.user_check.service.response.admin.AttendanceSettingResponseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,13 +21,6 @@ import org.springframework.web.bind.annotation.*;
 public class AdminAttendanceSettingController {
 
     private final AttendanceSettingResponseService attendanceSettingResponseService;
-
-    @Deprecated
-    @Operation(summary = "출석 설정 정보 조회")
-    @GetMapping
-    public ResponseEntity<AttendanceSettingResponse> getAttendanceSetting(){
-        return attendanceSettingResponseService.getAttendanceSetting();
-    }
 
     @Operation(summary = "출석 시간 수정")
     @ResultUpdateAndDeleteResponse

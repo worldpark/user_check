@@ -68,7 +68,7 @@ public class LoginTests {
 
         if(testSave){
             Optional<User> user = userRepository.findByUsername(testId);
-//            userRepository.delete(user.orElseThrow(() -> new RuntimeException()));
+            userRepository.delete(user.orElseThrow(() -> new RuntimeException()));
         }
     }
 }

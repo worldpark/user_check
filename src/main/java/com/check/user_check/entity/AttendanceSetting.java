@@ -50,6 +50,14 @@ public class AttendanceSetting extends BaseEntity{
         }
     }
 
+    public AttendanceSetting(UUID infoId, Double latitude, Double longitude, LocalTime attendanceTime, User user) {
+        this.infoId = infoId;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.attendanceTime = attendanceTime;
+        this.user = user;
+    }
+
     public void changeAttendanceTime(LocalTime attendanceTime, User user){
         this.attendanceTime = attendanceTime;
         this.user = user;

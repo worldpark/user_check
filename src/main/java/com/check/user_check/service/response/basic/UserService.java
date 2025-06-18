@@ -21,7 +21,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     private UsernameNotFoundWithCodeException userNotFound(){
-        throw new UsernameNotFoundWithCodeException("계정 정보를 찾지 못했습니다.", "010302");
+        throw new UsernameNotFoundWithCodeException("계정 정보를 찾지 못했습니다.", "020301");
     }
 
     public User findById(UUID id){
@@ -45,7 +45,7 @@ public class UserService {
         }catch (DataIntegrityViolationException dataIntegrityViolationException){
             String message = dataIntegrityViolationException.getMessage();
 
-            throw new DataIntegrityViolationWithCodeException(message, "010302");
+            throw new DataIntegrityViolationWithCodeException(message, "020302");
         }
     }
 

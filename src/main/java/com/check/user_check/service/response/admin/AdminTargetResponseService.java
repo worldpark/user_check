@@ -18,9 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -36,8 +34,7 @@ public class AdminTargetResponseService {
 
     private final AttendanceSettingService attendanceSettingService;
 
-    public ResponseEntity<List<AttendanceTargetResponse>> readAttendanceTarget(
-            CustomUserDetails customUserDetails){
+    public ResponseEntity<List<AttendanceTargetResponse>> readAttendanceTarget(){
 
         List<AttendanceTarget> findTargets = attendanceTargetService.findAllFetch();
 
@@ -89,7 +86,7 @@ public class AdminTargetResponseService {
 
     @Transactional(readOnly = false)
     public ResponseEntity<ResultResponse<Void>> deleteAttendanceTarget(
-            UUID attendanceTargetId, CustomUserDetails customUserDetails) {
+            UUID attendanceTargetId) {
 
         AttendanceTarget findTarget = attendanceTargetService.findById(attendanceTargetId);
 

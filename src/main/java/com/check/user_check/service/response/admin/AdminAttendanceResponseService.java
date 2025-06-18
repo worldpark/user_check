@@ -1,12 +1,10 @@
 package com.check.user_check.service.response.admin;
 
-import com.check.user_check.dto.AttendanceStatisticsDto;
 import com.check.user_check.dto.ResultResponse;
 import com.check.user_check.dto.request.attendance.AttendanceUpdateRequest;
 import com.check.user_check.dto.response.admin.AttendanceSummaryResponse;
 import com.check.user_check.dto.response.common.AttendanceResponse;
 import com.check.user_check.entity.Attendance;
-import com.check.user_check.enumeratedType.AttendanceStatus;
 import com.check.user_check.service.response.basic.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.UUID;
 
 @Service
