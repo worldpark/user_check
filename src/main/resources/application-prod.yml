@@ -5,11 +5,6 @@ server:
   forward-headers-strategy: framework
 
 spring:
-  datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/user_check?rewriteBatchedStatements=true
-    username: root
-    password: gkwlak98
   jpa:
     hibernate:
       ddl-auto: update
@@ -22,9 +17,3 @@ spring:
     generate-ddl: true
     defer-datasource-initialization: true
     open-in-view: false
-
-
-
-#logging:
-#  level:
-#    org.hibernate.orm.jdbc.bind: trace
