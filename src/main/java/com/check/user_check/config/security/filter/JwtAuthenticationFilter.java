@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || path.equals("/api/auth/validate-token")
                 || path.equals("/api/user/auth/refresh")
                 || path.startsWith("/admin") || path.startsWith("/user/") //front url
-//                || path.startsWith("/")
+                || path.startsWith("/js/") || path.startsWith("/css/")
         ) {
             filterChain.doFilter(request, response);
             return;

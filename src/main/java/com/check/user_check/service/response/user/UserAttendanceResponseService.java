@@ -72,7 +72,7 @@ public class UserAttendanceResponseService {
         List<Attendance> userAttendance = attendanceService.findUserAttendance(userId, minTime, maxTime);
 
         int resultSize = userAttendance.size();
-        if(resultSize != 1 ){
+        if(resultSize > 1 ){
             throw new CustomException(ServerExceptionCode.INTERNAL_SERVER_ERROR);
         }
 

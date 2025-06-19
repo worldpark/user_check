@@ -84,7 +84,7 @@ public class SecurityConfig {
                                 , "/index.html", "/assets/**", "/api/auth/validate-token"
                                 , "/api/user/auth/refresh"
                                 , "/admin/**", "/user/**"   //front 페이지 url
-//                                , "/**"
+                                , "/js/**", "/css/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
