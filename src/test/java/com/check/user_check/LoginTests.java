@@ -60,7 +60,6 @@ public class LoginTests {
 
     @Test
     void login(){
-        System.out.println("aa");
     }
 
     @AfterAll

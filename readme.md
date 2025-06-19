@@ -1,3 +1,19 @@
+# 계정 ID, PW
+
+관리자 ID : admin<br>
+관리자 PW : 1111<br>
+
+사용자 ID : user1<br>
+사용자 PW : 1111<br>
+
+사용자 ID : user2<br>
+사용자 PW : 1111<br>
+
+사용자 ID : user3<br>
+사용자 PW : 1111<br>
+
+---
+
 # ERD 설계
 [ERD Cloud](https://www.erdcloud.com/d/48QywLh2DwocKLWKf)
 
