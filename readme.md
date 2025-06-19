@@ -3,7 +3,7 @@
 
 ---
 # API 설계
-[Swagger](https://www.naver.com/)
+[Swagger](https://kimjr.shop/docs/swagger-ui/index.html)
 
 ---
 # 예외 코드 설계
