@@ -30,7 +30,7 @@ public class AttendanceScheduler {
     private final AttendanceSettingService attendanceSettingService;
     private final AttendanceTargetService attendanceTargetService;
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 8 * * *")
     @Transactional
     public void createAttendance(){
         AttendanceSetting attendanceSetting = attendanceSettingService.findAttendanceSetting();
