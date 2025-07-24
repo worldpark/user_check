@@ -4,12 +4,10 @@ server:
     name: user_check
   forward-headers-strategy: framework
 
+
+
 spring:
-  datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/user_check?rewriteBatchedStatements=true
-    username: root
-    password: gkwlak98
+
   jpa:
     hibernate:
       ddl-auto: update

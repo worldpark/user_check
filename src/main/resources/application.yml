@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: ${SPRING_USERCHECK_DATASOURCE_USERNAME}
+    password: ${SPRING_USERCHECK_DATASOURCE_PASSWORD}
+    url: ${SPRING_USERCHECK_DATASOURCE_URL}
+
+  jwt:
+    secret: ${SPRING_USERCHECK_JWT_KEY}
+
+  application:
+    name: user_check
+
+springdoc:
+  use-fqn: true
+  api-docs:
+    path: /docs
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  swagger-ui:
+    default-models-expand-depth: -1
+    operations-sorter: alpha
+    tags-sorter: alpha
+    path: /docs/swagger-ui
+    disable-swagger-default-url: true
+  paths-to-match:
+    - /**
+
+access-token-expiration-time: 1440
+refresh-token-expiration-time: 1440
