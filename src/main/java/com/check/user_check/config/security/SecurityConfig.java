@@ -135,7 +135,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
-                "http://localhost:5173", "http://192.168.0.8:8081", "https://worldpark.github.io"));
+                "http://localhost:5173", "http://192.168.0.8:8081", "https://kimjr.shop:9443"));
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);
