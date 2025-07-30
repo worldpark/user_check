@@ -35,6 +35,10 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
         Map<String, String> jsonData = AuthenticationUtil.parseRequestJSON(request);
 
+        if(jsonData.get("password") == null){
+            throw new IllegalStateException("소셜 로그인 계정입니다. 직접 로그인이 불가능 합니다.");
+        }
+
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 new UsernamePasswordAuthenticationToken(
                         jsonData.get("username"),

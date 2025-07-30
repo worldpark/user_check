@@ -3,15 +3,15 @@ package com.check.user_check.service.response.admin;
 import com.check.user_check.config.security.CustomUserDetails;
 import com.check.user_check.dto.ResultResponse;
 import com.check.user_check.dto.request.attendance.target.AttendanceTargetRequest;
+import com.check.user_check.dto.AttendanceSettingDto;
 import com.check.user_check.dto.response.admin.AttendanceTargetResponse;
 import com.check.user_check.entity.Attendance;
-import com.check.user_check.entity.AttendanceSetting;
 import com.check.user_check.entity.AttendanceTarget;
 import com.check.user_check.entity.User;
 import com.check.user_check.enumeratedType.AttendanceStatus;
 import com.check.user_check.service.response.basic.AttendanceService;
-import com.check.user_check.service.response.basic.AttendanceSettingService;
 import com.check.user_check.service.response.basic.AttendanceTargetService;
+import com.check.user_check.service.AttendanceSettingCacheService;
 import com.check.user_check.util.LocalDateTimeCreator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +32,7 @@ public class AdminTargetResponseService {
 
     private final AttendanceService attendanceService;
 
-    private final AttendanceSettingService attendanceSettingService;
+    private final AttendanceSettingCacheService attendanceSettingCacheService;
 
     public ResponseEntity<List<AttendanceTargetResponse>> readAttendanceTarget(){
 
@@ -65,9 +65,11 @@ public class AdminTargetResponseService {
                                 .build())
                         .collect(Collectors.toList());
 
-        AttendanceSetting attendanceSetting = attendanceSettingService.findAttendanceSetting();
+        AttendanceSettingDto attendanceSettingDto =
+                attendanceSettingCacheService.cachingAttendanceSetting();
+
         LocalDateTime assignDateTime =
-                LocalDateTimeCreator.getNowLocalDateTimeToLocalTime(attendanceSetting.getAttendanceTime());
+                LocalDateTimeCreator.getNowLocalDateTimeToLocalTime(attendanceSettingDto.attendanceTime());
 
         List<Attendance> attendances = attendanceTargetRequest.targetRequests().stream()
                 .map(targetRequest -> Attendance.builder()
@@ -90,9 +92,11 @@ public class AdminTargetResponseService {
 
         AttendanceTarget findTarget = attendanceTargetService.findById(attendanceTargetId);
 
-        AttendanceSetting attendanceSetting = attendanceSettingService.findAttendanceSetting();
+        AttendanceSettingDto attendanceSettingDto =
+                attendanceSettingCacheService.cachingAttendanceSetting();
+
         LocalDateTime assignDateTime =
-                LocalDateTimeCreator.getNowLocalDateTimeToLocalTime(attendanceSetting.getAttendanceTime());
+                LocalDateTimeCreator.getNowLocalDateTimeToLocalTime(attendanceSettingDto.attendanceTime());
 
         Attendance findAttendance = attendanceService.findByUserIdAndAttendanceDate(
                 findTarget.getUser().getUserId(), assignDateTime);

@@ -38,4 +38,8 @@ public class RefreshTokenRecord extends BaseEntity{
             tokenId = UUIDv6Generator.generate();
         }
     }
+
+    public void expireToken(){
+        this.expireAt = LocalDateTime.now();
+    }
 }

@@ -4,7 +4,7 @@ import com.check.user_check.config.security.CustomUserDetails;
 import com.check.user_check.dto.ResultResponse;
 import com.check.user_check.dto.request.attendance.setting.PositionSettingRequest;
 import com.check.user_check.dto.request.attendance.setting.TimeSettingRequest;
-import com.check.user_check.dto.response.admin.AttendanceSettingResponse;
+import com.check.user_check.dto.AttendanceSettingDto;
 import com.check.user_check.entity.Attendance;
 import com.check.user_check.entity.AttendanceSetting;
 import com.check.user_check.entity.AttendanceTarget;
@@ -16,11 +16,9 @@ import com.check.user_check.repository.AttendanceTargetRepository;
 import com.check.user_check.repository.UserRepository;
 import com.check.user_check.service.response.basic.AttendanceService;
 import com.check.user_check.service.response.basic.AttendanceSettingService;
-import com.check.user_check.service.response.basic.AttendanceTargetService;
 import com.check.user_check.util.UUIDv6Generator;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
-class AttendanceSettingResponseServiceTest {
+class AttendanceSettingDtoServiceTest {
 
     @Autowired
     private AttendanceSettingResponseService attendanceSettingResponseService;
@@ -142,15 +140,15 @@ class AttendanceSettingResponseServiceTest {
 
     @Test
     void getAttendanceSetting() {
-        ResponseEntity<AttendanceSettingResponse> response =
+        ResponseEntity<AttendanceSettingDto> response =
                 attendanceSettingResponseService.getAttendanceSetting();
 
-        AttendanceSettingResponse attendanceSettingResponse = response.getBody();
+        AttendanceSettingDto attendanceSettingDto = response.getBody();
 
-        assertThat(attendanceSetting.getInfoId()).isEqualTo(attendanceSettingResponse.infoId());
-        assertThat(attendanceSetting.getLatitude()).isEqualTo(attendanceSettingResponse.latitude());
-        assertThat(attendanceSetting.getLongitude()).isEqualTo(attendanceSettingResponse.longitude());
-        assertThat(attendanceSetting.getAttendanceTime()).isEqualTo(attendanceSettingResponse.attendanceTime());
+        assertThat(attendanceSetting.getInfoId()).isEqualTo(attendanceSettingDto.infoId());
+        assertThat(attendanceSetting.getLatitude()).isEqualTo(attendanceSettingDto.latitude());
+        assertThat(attendanceSetting.getLongitude()).isEqualTo(attendanceSettingDto.longitude());
+        assertThat(attendanceSetting.getAttendanceTime()).isEqualTo(attendanceSettingDto.attendanceTime());
     }
 
     @Test

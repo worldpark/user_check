@@ -1,13 +1,10 @@
 package com.check.user_check.config.security;
 
+import com.check.user_check.config.security.handler.*;
 import com.check.user_check.enumeratedType.Role;
 import com.check.user_check.config.security.filter.JwtAuthenticationFilter;
 import com.check.user_check.config.security.filter.LoginFilter;
 import com.check.user_check.config.security.filter.RefreshTokenFilter;
-import com.check.user_check.config.security.handler.AuthenticationEntryPointHandler;
-import com.check.user_check.config.security.handler.CustomAccessDeniedHandler;
-import com.check.user_check.config.security.handler.LoginFailureHandler;
-import com.check.user_check.config.security.handler.LoginSuccessHandler;
 import com.check.user_check.config.security.util.JWTUtil;
 import com.check.user_check.service.response.basic.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +50,8 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
 
+    private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
 
@@ -85,11 +84,16 @@ public class SecurityConfig {
                                 , "/api/user/auth/refresh"
                                 , "/admin/**", "/user/**"   //front 페이지 url
                                 , "/js/**", "/css/**"
+                                , "/ws/**", "/wss/**", "/app/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/api/logout")
+                        .logoutSuccessHandler(customLogoutSuccessHandler)
                 )
                 .cors(corsCustom -> corsCustom.configurationSource(corsConfigurationSource()))
                 .exceptionHandling(handler -> handler

@@ -1,6 +1,5 @@
 package com.check.user_check.config.security.handler;
 
-import com.check.user_check.config.security.util.AuthenticationUtil;
 import com.check.user_check.config.security.util.JWTUtil;
 import com.check.user_check.entity.RefreshTokenRecord;
 import com.check.user_check.service.response.basic.RefreshTokenService;
@@ -14,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;

@@ -3,12 +3,14 @@ package com.check.user_check.controller.user;
 import com.check.user_check.config.security.CustomUserDetails;
 import com.check.user_check.config.swagger.annotation.ResultUpdateAndDeleteResponse;
 import com.check.user_check.dto.ResultResponse;
+import com.check.user_check.dto.SocketMessage;
 import com.check.user_check.dto.response.common.ListAttendanceResponse;
 import com.check.user_check.service.response.user.UserAttendanceResponseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +24,7 @@ import java.util.UUID;
 public class UserAttendanceController {
 
     private final UserAttendanceResponseService attendanceResponseService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Operation(summary = "출결 정보 조회")
     @GetMapping
@@ -38,6 +41,8 @@ public class UserAttendanceController {
             @PathVariable UUID attendanceId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
+        messagingTemplate.convertAndSend("/topic/public",
+                new SocketMessage("System", "Data refresh"));
         return attendanceResponseService.checkAttendance(attendanceId, customUserDetails);
     }
 }

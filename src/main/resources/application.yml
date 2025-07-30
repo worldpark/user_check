@@ -11,6 +11,14 @@ spring:
   application:
     name: user_check
 
+  cache:
+    type: redis
+
+  data:
+    redis:
+      host: ${SPRING_CACHE_DB_HOST}
+      port: ${SPRING_CACHE_DB_PORT}
+
 springdoc:
   use-fqn: true
   api-docs:

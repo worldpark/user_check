@@ -1,6 +1,6 @@
 package com.check.user_check.controller.common;
 
-import com.check.user_check.dto.response.admin.AttendanceSettingResponse;
+import com.check.user_check.dto.AttendanceSettingDto;
 import com.check.user_check.service.response.admin.AttendanceSettingResponseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,7 +20,7 @@ public class AttendanceSettingController {
 
     @Operation(summary = "출석 설정 정보 조회")
     @GetMapping
-    public ResponseEntity<AttendanceSettingResponse> getAttendanceSetting(){
+    public ResponseEntity<AttendanceSettingDto> getAttendanceSetting(){
         return attendanceSettingResponseService.getAttendanceSetting();
     }
 }

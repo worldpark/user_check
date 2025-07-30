@@ -1,10 +1,10 @@
 package com.check.user_check.schedule;
 
-import com.check.user_check.entity.AttendanceSetting;
+import com.check.user_check.dto.AttendanceSettingDto;
 import com.check.user_check.entity.AttendanceTarget;
 import com.check.user_check.enumeratedType.AttendanceStatus;
-import com.check.user_check.service.response.basic.AttendanceSettingService;
 import com.check.user_check.service.response.basic.AttendanceTargetService;
+import com.check.user_check.service.AttendanceSettingCacheService;
 import com.check.user_check.util.LocalDateTimeCreator;
 import com.check.user_check.util.UUIDv6Generator;
 import lombok.RequiredArgsConstructor;
@@ -27,15 +27,17 @@ import java.util.List;
 public class AttendanceScheduler {
 
     private final JdbcTemplate jdbcTemplate;
-    private final AttendanceSettingService attendanceSettingService;
     private final AttendanceTargetService attendanceTargetService;
+
+    private final AttendanceSettingCacheService attendanceSettingCacheService;
 
     @Scheduled(cron = "0 0 8 * * *")
     @Transactional
     public void createAttendance(){
-        AttendanceSetting attendanceSetting = attendanceSettingService.findAttendanceSetting();
+        AttendanceSettingDto attendanceSettingDto = attendanceSettingCacheService.cachingAttendanceSetting();
+
         LocalDateTime settingDateTime =
-                LocalDateTimeCreator.getNowLocalDateTimeToLocalTime(attendanceSetting.getAttendanceTime());
+                LocalDateTimeCreator.getNowLocalDateTimeToLocalTime(attendanceSettingDto.attendanceTime());
 
         List<AttendanceTarget> targets = attendanceTargetService.findAllFetch();
 
