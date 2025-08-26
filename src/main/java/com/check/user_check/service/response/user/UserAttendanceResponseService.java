@@ -2,14 +2,20 @@ package com.check.user_check.service.response.user;
 
 import com.check.user_check.config.security.CustomUserDetails;
 import com.check.user_check.dto.ResultResponse;
+import com.check.user_check.dto.request.attendance.KafkaAttendanceRequest;
 import com.check.user_check.dto.response.common.AttendanceResponse;
 import com.check.user_check.dto.response.common.ListAttendanceResponse;
 import com.check.user_check.entity.Attendance;
+import com.check.user_check.entity.OutboxEvent;
 import com.check.user_check.enumeratedType.AttendanceStatus;
 import com.check.user_check.exception.code.ClientExceptionCode;
 import com.check.user_check.exception.code.ServerExceptionCode;
 import com.check.user_check.exception.custom.CustomException;
+import com.check.user_check.repository.OutboxRepository;
 import com.check.user_check.service.response.basic.AttendanceService;
+import com.check.user_check.util.JsonUtilService;
+import com.check.user_check.util.UUIDv6Generator;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,6 +33,7 @@ import java.util.stream.Collectors;
 public class UserAttendanceResponseService {
 
     private final AttendanceService attendanceService;
+    private final OutboxRepository outboxRepository;
 
     private Attendance attendanceCheck(UUID attendanceId, CustomUserDetails customUserDetails){
         Attendance findAttendance = attendanceService.findFetchByAttendanceId(attendanceId);
@@ -39,7 +46,8 @@ public class UserAttendanceResponseService {
     }
 
     public ResponseEntity<ResultResponse<Void>> checkAttendance(
-            UUID attendanceId, CustomUserDetails customUserDetails
+            UUID attendanceId, CustomUserDetails customUserDetails,
+            HttpServletRequest httpServletRequest
     ) {
 
         Attendance findAttendance = attendanceCheck(attendanceId, customUserDetails);
@@ -53,7 +61,31 @@ public class UserAttendanceResponseService {
 
         findAttendance.changeCheckTime(now);
 
-        attendanceService.save(findAttendance);
+        //해당 기능은 kafka attendance-service 로 이전
+        //UUID saveId = attendanceService.save(findAttendance);
+
+        String accessToken = httpServletRequest.getHeader("Authorization");
+
+        OutboxEvent outboxEvent = new OutboxEvent(
+                UUIDv6Generator.generate(),
+                "attendance",
+                findAttendance.getAttendanceId(),
+                "ATTENDANCE_CHECK",
+                JsonUtilService.toJsonString(
+                        KafkaAttendanceRequest.builder()
+                                .attendanceId(findAttendance.getAttendanceId())
+                                .attendanceDate(findAttendance.getAttendanceDate())
+                                .checkTime(findAttendance.getCheckTime())
+                                .status(findAttendance.getStatus())
+                                .memo(findAttendance.getMemo())
+                                .userId(findAttendance.getUser().getUserId())
+                                .build()
+                ),
+                now,
+                accessToken
+        );
+
+        outboxRepository.save(outboxEvent);
 
         return ResultResponse.success();
     }

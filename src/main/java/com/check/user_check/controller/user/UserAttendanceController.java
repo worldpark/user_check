@@ -8,6 +8,7 @@ import com.check.user_check.dto.response.common.ListAttendanceResponse;
 import com.check.user_check.service.response.user.UserAttendanceResponseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -39,10 +40,11 @@ public class UserAttendanceController {
     @ResultUpdateAndDeleteResponse
     public ResponseEntity<ResultResponse<Void>> checkAttendance(
             @PathVariable UUID attendanceId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            HttpServletRequest httpServletRequest
     ){
         messagingTemplate.convertAndSend("/topic/public",
                 new SocketMessage("System", "Data refresh"));
-        return attendanceResponseService.checkAttendance(attendanceId, customUserDetails);
+        return attendanceResponseService.checkAttendance(attendanceId, customUserDetails, httpServletRequest);
     }
 }

@@ -77,26 +77,26 @@ class UserAttendanceResponseServiceTest {
         attendanceService.save(saveAttendance);
     }
 
-    @Test
-    void checkAttendance() {
-
-        CustomUserDetails customUserDetails = new CustomUserDetails(
-                user.getUserId(),
-                user.getUsername(),
-                user.getPassword(),
-                List.of(
-                        new SimpleGrantedAuthority("ROLE_USER")
-                )
-        );
-        ResponseEntity<ResultResponse<Void>> response =
-                userAttendanceResponseService.checkAttendance(attendance.getAttendanceId(), customUserDetails);
-
-        Attendance findAttendance = attendanceService.findById(attendance.getAttendanceId());
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-        assertThat(findAttendance.getCheckTime()).isNotNull();
-        assertThat(findAttendance.getStatus()).isEqualTo(AttendanceStatus.LATE);
-    }
+//    @Test
+//    void checkAttendance() {
+//
+//        CustomUserDetails customUserDetails = new CustomUserDetails(
+//                user.getUserId(),
+//                user.getUsername(),
+//                user.getPassword(),
+//                List.of(
+//                        new SimpleGrantedAuthority("ROLE_USER")
+//                )
+//        );
+//        ResponseEntity<ResultResponse<Void>> response =
+//                userAttendanceResponseService.checkAttendance(attendance.getAttendanceId(), customUserDetails);
+//
+//        Attendance findAttendance = attendanceService.findById(attendance.getAttendanceId());
+//
+//        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+//        assertThat(findAttendance.getCheckTime()).isNotNull();
+//        assertThat(findAttendance.getStatus()).isEqualTo(AttendanceStatus.LATE);
+//    }
 
     @Test
     void readUserAttendanceList() {

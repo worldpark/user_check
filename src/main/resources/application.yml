@@ -19,6 +19,14 @@ spring:
       host: ${SPRING_CACHE_DB_HOST}
       port: ${SPRING_CACHE_DB_PORT}
 
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    bootstrap-servers:
+      - ${KAFKA_1_SERVER}
+      - ${KAFKA_2_SERVER}
+
 springdoc:
   use-fqn: true
   api-docs:
