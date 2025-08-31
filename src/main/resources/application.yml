@@ -27,6 +27,18 @@ spring:
       - ${KAFKA_1_SERVER}
       - ${KAFKA_2_SERVER}
 
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      embedding:
+        options:
+          model: text-embedding-3-small
+
+  elasticsearch:
+    server-url: ${ELASTICSEARCH_SERVER_URL}
+    username: ${ELASTICSEARCH_USERNAME}
+    password: ${ELASTICSEARCH_PASSWORD}
+
 springdoc:
   use-fqn: true
   api-docs:
