@@ -54,5 +54,11 @@ springdoc:
   paths-to-match:
     - /**
 
-access-token-expiration-time: 1440
+access-token-expiration-time: 5
 refresh-token-expiration-time: 1440
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, beans, httptrace, info, metrics, prometheus

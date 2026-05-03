@@ -69,6 +69,9 @@ dependencies {
     implementation 'org.springframework.ai:spring-ai-starter-model-openai'
     implementation 'co.elastic.clients:elasticsearch-java:9.1.2'
     implementation 'org.springframework.ai:spring-ai-pdf-document-reader'
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 dependencyManagement {
