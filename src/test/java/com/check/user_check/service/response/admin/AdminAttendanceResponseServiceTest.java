@@ -50,7 +50,6 @@ class AdminAttendanceResponseServiceTest {
     private void setup(){
 
         List<User> saveUsers = new ArrayList<>();
-        List<Attendance> saveAttendances = new ArrayList<>();
 
         for(int i = 0; i < 10; i++){
 
@@ -62,7 +61,13 @@ class AdminAttendanceResponseServiceTest {
                     Role.ROLE_USER
             );
             saveUsers.add(saveUser);
+        }
 
+        List<User> savedUsers = userRepository.saveAll(saveUsers);
+        List<Attendance> saveAttendances = new ArrayList<>();
+
+        for(int i = 0; i < savedUsers.size(); i++){
+            User savedUser = savedUsers.get(i);
             Attendance saveAttendance = null;
             if(i % 2 == 0){
                 saveAttendance = new Attendance(
@@ -71,7 +76,7 @@ class AdminAttendanceResponseServiceTest {
                         localDateTime,
                         AttendanceStatus.PRESENT,
                         "",
-                        saveUser
+                        savedUser
                 );
             }else{
                 saveAttendance = new Attendance(
@@ -80,13 +85,12 @@ class AdminAttendanceResponseServiceTest {
                         null,
                         AttendanceStatus.ABSENT,
                         "",
-                        saveUser
+                        savedUser
                 );
             }
             saveAttendances.add(saveAttendance);
         }
 
-        userRepository.saveAll(saveUsers);
         attendanceService.saveAll(saveAttendances);
     }
 

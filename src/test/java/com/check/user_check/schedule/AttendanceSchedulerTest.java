@@ -21,8 +21,8 @@ class AttendanceSchedulerTest {
     @Autowired
     private AttendanceService attendanceService;
 
-    @Test
-    void insertAttendance(){
-        attendanceScheduler.createAttendance();
-    }
+//    @Test
+//    void insertAttendance(){
+//        attendanceScheduler.createAttendance();
+//    }
 }

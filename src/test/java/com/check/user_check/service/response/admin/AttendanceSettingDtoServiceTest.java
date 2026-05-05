@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -63,6 +64,9 @@ class AttendanceSettingDtoServiceTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private CacheManager cacheManager;
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -78,6 +82,7 @@ class AttendanceSettingDtoServiceTest {
 
     @BeforeEach
     private void setup(){
+        cacheManager.getCache("attendanceSetting").clear();
 
         User saveAdmin = new User(
                 UUIDv6Generator.generate(),
@@ -131,8 +136,7 @@ class AttendanceSettingDtoServiceTest {
                 localDateTime.toLocalTime(),
                 this.adminUser
         );
-        this.attendanceSetting = attendanceSetting;
-        attendanceSettingRepository.save(attendanceSetting);
+        this.attendanceSetting = attendanceSettingRepository.save(attendanceSetting);
     }
 
     @Test

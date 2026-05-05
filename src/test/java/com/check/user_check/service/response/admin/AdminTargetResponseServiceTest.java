@@ -22,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -66,6 +67,9 @@ class AdminTargetResponseServiceTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private CacheManager cacheManager;
+
     private final LocalDateTime localDateTime = LocalDateTime.now();
 
     private User user;
@@ -77,6 +81,7 @@ class AdminTargetResponseServiceTest {
 
     @BeforeEach
     private void setup(){
+        cacheManager.getCache("attendanceSetting").clear();
 
         User saveAdmin = new User(
                 UUIDv6Generator.generate(),
@@ -104,6 +109,7 @@ class AdminTargetResponseServiceTest {
                 Role.ROLE_USER
         );
         this.user = userRepository.save(saveUser);
+        userRepository.flush();
 
         Attendance saveAttendance = new Attendance(
                 UUIDv6Generator.generate(),

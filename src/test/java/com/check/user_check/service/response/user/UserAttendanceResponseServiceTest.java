@@ -61,7 +61,7 @@ class UserAttendanceResponseServiceTest {
                 "userName",
                 Role.ROLE_USER
         );
-        this.user = saveUser;
+        this.user = userRepository.save(saveUser);
 
         Attendance saveAttendance = new Attendance(
                 UUIDv6Generator.generate(),
@@ -69,11 +69,10 @@ class UserAttendanceResponseServiceTest {
                 null,
                 AttendanceStatus.ABSENT,
                 "",
-                saveUser
+                this.user
         );
         this.attendance = saveAttendance;
 
-        userRepository.save(saveUser);
         attendanceService.save(saveAttendance);
     }
 
