@@ -30,6 +30,9 @@ public class Attendance {
     @Id
     private UUID attendanceId;
 
+    @Version
+    private Long version;
+
     @NotNull
     private LocalDateTime attendanceDate;
     private LocalDateTime checkTime;
@@ -51,6 +54,22 @@ public class Attendance {
         if (attendanceId == null) {
             attendanceId = UUIDv6Generator.generate();
         }
+    }
+
+    public Attendance(
+            UUID attendanceId,
+            LocalDateTime attendanceDate,
+            LocalDateTime checkTime,
+            AttendanceStatus status,
+            String memo,
+            User user
+    ) {
+        this.attendanceId = attendanceId;
+        this.attendanceDate = attendanceDate;
+        this.checkTime = checkTime;
+        this.status = status;
+        this.memo = memo;
+        this.user = user;
     }
 
     public void changeStatus(AttendanceStatus status){

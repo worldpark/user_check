@@ -86,8 +86,7 @@ class AttendanceSettingDtoServiceTest {
                 "testName",
                 Role.ROLE_ADMIN
         );
-        this.adminUser = saveAdmin;
-        userRepository.save(saveAdmin);
+        this.adminUser = userRepository.save(saveAdmin);
 
         User noTargetSaveUser = new User(
                 UUIDv6Generator.generate(),
@@ -96,8 +95,7 @@ class AttendanceSettingDtoServiceTest {
                 "userName2",
                 Role.ROLE_USER
         );
-        this.noTarget = noTargetSaveUser;
-        userRepository.save(noTargetSaveUser);
+        this.noTarget = userRepository.save(noTargetSaveUser);
 
         User saveUser = new User(
                 UUIDv6Generator.generate(),
@@ -106,8 +104,7 @@ class AttendanceSettingDtoServiceTest {
                 "userName",
                 Role.ROLE_USER
         );
-        this.user = saveUser;
-        userRepository.save(saveUser);
+        this.user = userRepository.save(saveUser);
 
         Attendance saveAttendance = new Attendance(
                 UUIDv6Generator.generate(),
@@ -115,15 +112,15 @@ class AttendanceSettingDtoServiceTest {
                 null,
                 AttendanceStatus.ABSENT,
                 "",
-                saveUser
+                this.user
         );
         this.attendance = saveAttendance;
         attendanceService.save(saveAttendance);
 
         AttendanceTarget saveAttendanceTarget = new AttendanceTarget(
                 attendanceTargetId,
-                saveAdmin,
-                saveUser
+                this.adminUser,
+                this.user
         );
         attendanceTargetRepository.save(saveAttendanceTarget);
 
@@ -132,7 +129,7 @@ class AttendanceSettingDtoServiceTest {
                 10.,
                 10.,
                 localDateTime.toLocalTime(),
-                saveAdmin
+                this.adminUser
         );
         this.attendanceSetting = attendanceSetting;
         attendanceSettingRepository.save(attendanceSetting);

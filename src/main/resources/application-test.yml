@@ -23,7 +23,7 @@ spring:
       host: localhost
       port: 6379
   jwt:
-    secret: dGVzdC1zZWNyZXQta2V5LXRlc3Qtc2VjcmV0LWtleS0xMjM0NTY=
+    secret: sOX6rwX65uDe+JphKfE9SAbC9oR3n61BN84t9zkN9QI=
   kafka:
     bootstrap-servers:
       - localhost:9092
@@ -33,4 +33,4 @@ spring:
   elasticsearch:
     server-url: http://localhost:9200
     username: elastic
-    password: password
+    password: gkwlak98

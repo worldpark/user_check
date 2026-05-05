@@ -47,10 +47,6 @@ public class AttendanceSettingResponseService {
 
         AttendanceSetting attendanceSetting = attendanceSettingService.findAttendanceSetting();
         attendanceSetting.changeAttendanceTime(timeSettingRequest.attendanceTime(), user);
-        entityManager.flush();
-        entityManager.clear();
-
-        attendanceSettingCacheService.cacheDataChange(attendanceSetting);
 
         LocalDate today = LocalDate.now();
 
@@ -59,7 +55,11 @@ public class AttendanceSettingResponseService {
         LocalDateTime todayTime = today.atStartOfDay();
         LocalDateTime tomorrowTime = today.plusDays(1).atStartOfDay();
 
+        entityManager.flush();
         attendanceService.updateAttendanceDate(assignDateTime, todayTime, tomorrowTime);
+        entityManager.clear();
+
+        attendanceSettingCacheService.cacheDataChange(attendanceSetting);
 
         return ResultResponse.success();
     }
@@ -74,6 +74,9 @@ public class AttendanceSettingResponseService {
         AttendanceSetting attendanceSetting = attendanceSettingService.findAttendanceSetting();
         attendanceSetting.changeAttendancePosition(
                 positionSettingRequest.latitude(), positionSettingRequest.longitude(), user);
+
+        entityManager.flush();
+        entityManager.clear();
 
         attendanceSettingCacheService.cacheDataChange(attendanceSetting);
 

@@ -7,7 +7,9 @@ import com.check.user_check.exception.custom.CustomException;
 import com.check.user_check.exception.custom.DataIntegrityViolationWithCodeException;
 import com.check.user_check.exception.custom.EntityNotFoundWithCodeException;
 import com.check.user_check.exception.custom.UsernameNotFoundWithCodeException;
+import jakarta.persistence.OptimisticLockException;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -51,6 +53,18 @@ public class CustomExceptionHandler {
     @ExceptionHandler(EntityNotFoundWithCodeException.class)
     private ResponseEntity<Object> entityNotFoundWithCodeException(EntityNotFoundWithCodeException exception){
         return messageWithCode(exception, exception.getCode(), ClientExceptionCode.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({
+            ObjectOptimisticLockingFailureException.class,
+            OptimisticLockException.class
+    })
+    private ResponseEntity<Object> optimisticLockingFailureException(Exception exception){
+
+        return messageWithCode(
+                exception,
+                "050303",
+                ClientExceptionCode.CONFLICT);
     }
 
 }
