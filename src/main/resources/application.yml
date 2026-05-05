@@ -24,8 +24,8 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
     bootstrap-servers:
-      - ${KAFKA_1_SERVER}
-      - ${KAFKA_2_SERVER}
+      - ${KAFKA_1_SERVER:localhost:9092}
+      - ${KAFKA_2_SERVER:localhost:9093}
 
   ai:
     openai:

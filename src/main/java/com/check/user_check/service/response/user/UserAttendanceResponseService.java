@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,6 +46,7 @@ public class UserAttendanceResponseService {
         return findAttendance;
     }
 
+    @Transactional
     public ResponseEntity<ResultResponse<Void>> checkAttendance(
             UUID attendanceId, CustomUserDetails customUserDetails,
             HttpServletRequest httpServletRequest
@@ -53,13 +55,13 @@ public class UserAttendanceResponseService {
         Attendance findAttendance = attendanceCheck(attendanceId, customUserDetails);
         LocalDateTime now = LocalDateTime.now();
 
-        if(now.isBefore(findAttendance.getAttendanceDate())){
-            findAttendance.changeStatus(AttendanceStatus.PRESENT);
-        }else{
-            findAttendance.changeStatus(AttendanceStatus.LATE);
-        }
-
-        findAttendance.changeCheckTime(now);
+//        if(now.isBefore(findAttendance.getAttendanceDate())){
+//            findAttendance.changeStatus(AttendanceStatus.PRESENT);
+//        }else{
+//            findAttendance.changeStatus(AttendanceStatus.LATE);
+//        }
+//
+//        findAttendance.changeCheckTime(now);
 
         //해당 기능은 kafka attendance-service 로 이전
         //UUID saveId = attendanceService.save(findAttendance);
@@ -75,7 +77,7 @@ public class UserAttendanceResponseService {
                         KafkaAttendanceRequest.builder()
                                 .attendanceId(findAttendance.getAttendanceId())
                                 .attendanceDate(findAttendance.getAttendanceDate())
-                                .checkTime(findAttendance.getCheckTime())
+                                .checkTime(now)
                                 .status(findAttendance.getStatus())
                                 .memo(findAttendance.getMemo())
                                 .userId(findAttendance.getUser().getUserId())

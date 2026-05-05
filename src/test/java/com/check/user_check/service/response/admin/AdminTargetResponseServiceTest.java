@@ -11,6 +11,7 @@ import com.check.user_check.entity.User;
 import com.check.user_check.enumeratedType.AttendanceStatus;
 import com.check.user_check.enumeratedType.Role;
 import com.check.user_check.exception.custom.EntityNotFoundWithCodeException;
+import com.check.user_check.repository.AttendanceRepository;
 import com.check.user_check.repository.AttendanceSettingRepository;
 import com.check.user_check.repository.AttendanceTargetRepository;
 import com.check.user_check.repository.UserRepository;
@@ -51,6 +52,9 @@ class AdminTargetResponseServiceTest {
     private AttendanceService attendanceService;
 
     @Autowired
+    private AttendanceRepository attendanceRepository;
+
+    @Autowired
     private AttendanceTargetRepository attendanceTargetRepository;
 
     @Autowired
@@ -81,8 +85,7 @@ class AdminTargetResponseServiceTest {
                 "testName",
                 Role.ROLE_ADMIN
         );
-        this.adminUser = saveAdmin;
-        userRepository.save(saveAdmin);
+        this.adminUser = userRepository.save(saveAdmin);
 
         User noTargetSaveUser = new User(
                 UUIDv6Generator.generate(),
@@ -91,8 +94,7 @@ class AdminTargetResponseServiceTest {
                 "userName2",
                 Role.ROLE_USER
         );
-        this.noTarget = noTargetSaveUser;
-        userRepository.save(noTargetSaveUser);
+        this.noTarget = userRepository.save(noTargetSaveUser);
 
         User saveUser = new User(
                 UUIDv6Generator.generate(),
@@ -101,8 +103,7 @@ class AdminTargetResponseServiceTest {
                 "userName",
                 Role.ROLE_USER
         );
-        this.user = saveUser;
-        userRepository.save(saveUser);
+        this.user = userRepository.save(saveUser);
 
         Attendance saveAttendance = new Attendance(
                 UUIDv6Generator.generate(),
@@ -110,15 +111,15 @@ class AdminTargetResponseServiceTest {
                 null,
                 AttendanceStatus.ABSENT,
                 "",
-                saveUser
+                this.user
         );
         this.attendance = saveAttendance;
         attendanceService.save(saveAttendance);
 
         AttendanceTarget saveAttendanceTarget = new AttendanceTarget(
                 attendanceTargetId,
-                saveAdmin,
-                saveUser
+                this.adminUser,
+                this.user
         );
         attendanceTargetRepository.save(saveAttendanceTarget);
 
@@ -127,7 +128,7 @@ class AdminTargetResponseServiceTest {
                 10.,
                 10.,
                 localDateTime.toLocalTime(),
-                saveAdmin
+                this.adminUser
         );
         attendanceSettingRepository.save(attendanceSetting);
     }
@@ -172,8 +173,17 @@ class AdminTargetResponseServiceTest {
         ResponseEntity<ResultResponse<List<UUID>>> attendanceTarget =
                 adminTargetResponseService.createAttendanceTarget(attendanceTargetRequest, customUserDetails);
 
+        List<Attendance> createdAttendances = attendanceRepository.findAll().stream()
+                .filter(attendance -> attendance.getUser().getUserId().equals(noTarget.getUserId()))
+                .toList();
+
         assertThat(attendanceTarget.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(attendanceTarget.getBody().getUuids().size()).isEqualTo(1);
+        assertThat(createdAttendances).hasSize(1);
+        Attendance createdAttendance = createdAttendances.get(0);
+        assertThat(createdAttendance).isNotNull();
+        assertThat(createdAttendance.getStatus()).isEqualTo(AttendanceStatus.ABSENT);
+        assertThat(createdAttendance.getUser().getUserId()).isEqualTo(noTarget.getUserId());
     }
 
     @Test

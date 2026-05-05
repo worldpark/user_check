@@ -1,12 +1,12 @@
 spring:
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:tcp://localhost/~/usercheck
+    url: jdbc:h2:mem:usercheck;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
     username: sa
     password:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         show_sql: true
@@ -16,3 +16,21 @@ spring:
     generate-ddl: true
     defer-datasource-initialization: true
     open-in-view: false
+  cache:
+    type: simple
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  jwt:
+    secret: dGVzdC1zZWNyZXQta2V5LXRlc3Qtc2VjcmV0LWtleS0xMjM0NTY=
+  kafka:
+    bootstrap-servers:
+      - localhost:9092
+  ai:
+    openai:
+      api-key: test-api-key
+  elasticsearch:
+    server-url: http://localhost:9200
+    username: elastic
+    password: password

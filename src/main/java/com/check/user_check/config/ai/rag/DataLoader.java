@@ -14,6 +14,7 @@ import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.context.annotation.Profile;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
+@Profile("!test")
 public class DataLoader {
     private final EsIndexService esIndexService;
     private final ElasticsearchClient elasticsearchClient;

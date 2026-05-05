@@ -13,11 +13,17 @@ import com.check.user_check.service.response.basic.AttendanceService;
 import com.check.user_check.service.response.basic.AttendanceTargetService;
 import com.check.user_check.service.AttendanceSettingCacheService;
 import com.check.user_check.util.LocalDateTimeCreator;
+import com.check.user_check.util.UUIDv6Generator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -33,6 +39,8 @@ public class AdminTargetResponseService {
     private final AttendanceService attendanceService;
 
     private final AttendanceSettingCacheService attendanceSettingCacheService;
+
+    private final JdbcTemplate jdbcTemplate;
 
     public ResponseEntity<List<AttendanceTargetResponse>> readAttendanceTarget(){
 
@@ -58,7 +66,9 @@ public class AdminTargetResponseService {
             AttendanceTargetRequest attendanceTargetRequest,
             CustomUserDetails customUserDetails) {
 
-        List<AttendanceTarget> attendanceTargets = attendanceTargetRequest.targetRequests().stream()
+        List<AttendanceTargetRequest.TargetRequest> targetRequests =
+                attendanceTargetRequest.targetRequests();
+        List<AttendanceTarget> attendanceTargets = targetRequests.stream()
                         .map(targetRequest -> AttendanceTarget.builder()
                                 .assignedUser(new User(customUserDetails.getUserId()))
                                 .user(new User(targetRequest.userId()))
@@ -71,15 +81,29 @@ public class AdminTargetResponseService {
         LocalDateTime assignDateTime =
                 LocalDateTimeCreator.getNowLocalDateTimeToLocalTime(attendanceSettingDto.attendanceTime());
 
-        List<Attendance> attendances = attendanceTargetRequest.targetRequests().stream()
-                .map(targetRequest -> Attendance.builder()
-                        .attendanceDate(assignDateTime)
-                        .status(AttendanceStatus.ABSENT)
-                        .user(new User(targetRequest.userId()))
-                        .build())
-                .collect(Collectors.toList());
+        jdbcTemplate.batchUpdate(
+                """
+                    INSERT INTO attendance (attendance_id, attendance_date, status, user_id)
+                    VALUES (?, ?, ?, ?)
+                """,
+                new BatchPreparedStatementSetter() {
 
-        attendanceService.saveAll(attendances);
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        AttendanceTargetRequest.TargetRequest targetRequest = targetRequests.get(i);
+
+                        ps.setString(1, UUIDv6Generator.generate().toString());
+                        ps.setTimestamp(2, Timestamp.valueOf(assignDateTime));
+                        ps.setString(3, AttendanceStatus.ABSENT.toString());
+                        ps.setString(4, targetRequest.userId().toString());
+                    }
+
+                    @Override
+                    public int getBatchSize() {
+                        return targetRequests.size();
+                    }
+                }
+        );
 
         List<UUID> results = attendanceTargetService.saveAll(attendanceTargets);
 

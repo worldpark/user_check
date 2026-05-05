@@ -1,0 +1,177 @@
+version: "3.9"
+
+services:
+  usercheck-db:
+    container_name: dev-usercheck-db
+    image: 'mariadb:latest'
+    volumes:
+      - C:\docker-compose\usercheck\maria:/var/lib/mysql
+    environment:
+      - TZ=Asia/Seoul
+      - MARIADB_ROOT_PASSWORD=gkwlak98
+      - MARIADB_DATABASE=user_check
+    ports:
+      - '3307:3306'
+    command:
+      - "--log-bin=mysql-bin"
+      - "--binlog-format=ROW"
+      - "--server-id=223344"
+      - "--binlog_row_image=FULL"
+      - "--gtid_strict_mode=0"
+    networks:
+      dev_network:
+
+#  redis-db:
+#    container_name: dev-redis-db
+#    image: 'redis:latest'
+#    ports:
+#      - '6379:6379'
+#    volumes:
+#      - C:\docker-compose\usercheck\redis:/data
+#    networks:
+#      dev_network:
+#        ipv4_address: 172.30.1.60
+
+  usercheck_kafka1:
+    image: bitnami/kafka:3.7
+    container_name: dev-usercheck_kafka1
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_ENABLE_KRAFT: "yes"
+      KAFKA_KRAFT_CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+      KAFKA_CFG_NODE_ID: "1"
+      KAFKA_CFG_PROCESS_ROLES: "broker,controller"
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@usercheck_kafka1:39092,2@usercheck_kafka2:39093"
+
+      KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,PLAINTEXT_INTERNAL://:29092,CONTROLLER://:39092"
+      KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://usercheck_kafka1:29092"
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: "PLAINTEXT_INTERNAL"
+
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: "2"
+      KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "2"
+      KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR: "2"
+      KAFKA_CFG_MIN_INSYNC_REPLICAS: "2"
+      KAFKA_CFG_DELETE_TOPIC_ENABLE: "true"
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
+    volumes:
+      - dev-kafka_usercheck_data1:/bitnami/kafka
+    networks:
+      - dev_network
+
+  usercheck_kafka2:
+    image: bitnami/kafka:3.7
+    container_name: dev-usercheck_kafka2
+    ports:
+      - "9093:9093"
+      - "29093:29093"
+    environment:
+      KAFKA_ENABLE_KRAFT: "yes"
+      KAFKA_KRAFT_CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+      KAFKA_CFG_NODE_ID: "2"
+      KAFKA_CFG_PROCESS_ROLES: "broker,controller"
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@usercheck_kafka1:39092,2@usercheck_kafka2:39093"
+
+      KAFKA_CFG_LISTENERS: "PLAINTEXT://:9093,PLAINTEXT_INTERNAL://:29093,CONTROLLER://:39093"
+      KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9093,PLAINTEXT_INTERNAL://usercheck_kafka2:29093"
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: "PLAINTEXT_INTERNAL"
+
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: "2"
+      KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR: "2"
+      KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "2"
+      KAFKA_CFG_MIN_INSYNC_REPLICAS: "2"
+      KAFKA_CFG_DELETE_TOPIC_ENABLE: "true"
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
+    volumes:
+      - dev-kafka_usercheck_data2:/bitnami/kafka
+    networks:
+      - dev_network
+
+
+  usercheck_kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: dev-usercheck_kafka-ui
+    depends_on:
+      - usercheck_kafka1
+      - usercheck_kafka2
+    ports:
+      - "8084:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: usercheck_kafka1:29092,usercheck_kafka2:29093
+    networks:
+      - dev_network
+
+  usercheck_connect:
+    image: quay.io/debezium/connect:3.1.2.Final
+    container_name: dev-usercheck_connect
+    depends_on:
+      - usercheck_kafka1
+      - usercheck_kafka2
+      - usercheck-db
+    ports:
+      - "8083:8083"
+    environment:
+      BOOTSTRAP_SERVERS: "usercheck_kafka1:29092,usercheck_kafka2:29093"
+      GROUP_ID: "debezium-connect-cluster"
+      CONFIG_STORAGE_TOPIC: "__connect-configs"
+      OFFSET_STORAGE_TOPIC: "__connect-offsets"
+      STATUS_STORAGE_TOPIC: "__connect-status"
+      KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+      VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONFIG_STORAGE_REPLICATION_FACTOR: "2"
+      OFFSET_STORAGE_REPLICATION_FACTOR: "2"
+      STATUS_STORAGE_REPLICATION_FACTOR: "2"
+      OFFSET_FLUSH_INTERVAL_MS: "10000"
+      PLUGIN_PATH: "/kafka/connect,/debezium-plugins"
+      KAFKA_HEAP_OPTS: "-Xms512m -Xmx1g"
+      CONNECT_TOPIC_CREATION_ENABLE: true 
+    networks:
+      - dev_network
+
+#  usercheck-elastic:
+#    container_name: usercheck-elastic
+#    build:
+#      context: .\elasticsearch\
+#      dockerfile: Dockerfile
+#    ports:
+#      - 9200:9200
+#    environment:
+#      - discovery.type=single-node
+#      - xpack.security.enabled=true
+#      - xpack.security.http.ssl.enabled=false
+#      - ELASTIC_PASSWORD=gkwlak98
+#    volumes:
+#      - usercheck_elastic:/usr/share/elasticsearch/data
+#    networks:
+#      dev_network:
+#        ipv4_address: 172.30.1.91
+
+#  usercheck-kibana:
+#    image: docker.elastic.co/kibana/kibana:9.1.2
+#    container_name: usercheck-kibana
+#    ports:
+#      - 5601:5601
+#    environment:
+#      - ELASTICSEARCH_HOSTS=http://usercheck-elastic:9200
+#      - ELASTICSEARCH_SERVICEACCOUNTTOKEN=AAEAAWVsYXN0aWMva2liYW5hL2tpYmFuYS10b2tlbjpjZXNiYUFLaFRSLTFVNkRlVEN0c3lR
+#    networks:
+#      - dev_network
+
+volumes:
+  dev-kafka_usercheck_data1:
+  dev-kafka_usercheck_data2:
+# usercheck_elastic:
+
+networks:
+  dev_network:
+    driver: bridge

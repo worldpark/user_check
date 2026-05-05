@@ -25,6 +25,9 @@ public class AttendanceSetting extends BaseEntity{
     @Id
     private UUID infoId;
 
+    @Version
+    private Long version;
+
     @NotNull
     private Double latitude;
 
