@@ -31,6 +31,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
                     "해당 메소드는 지원하지 않습니다.",
                     "010110"
             );
+            return null;
         }
 
         Map<String, String> jsonData = AuthenticationUtil.parseRequestJSON(request);

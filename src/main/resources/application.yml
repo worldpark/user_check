@@ -1,12 +1,12 @@
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    username: ${SPRING_USERCHECK_DATASOURCE_USERNAME:root}
-    password: ${SPRING_USERCHECK_DATASOURCE_PASSWORD:gkwlak98}
+    username: ${SPRING_USERCHECK_DATASOURCE_USERNAME}
+    password: ${SPRING_USERCHECK_DATASOURCE_PASSWORD}
     url: ${SPRING_USERCHECK_DATASOURCE_URL:jdbc:mariadb://localhost:3307/user_check?rewriteBatchedStatements=true}
 
   jwt:
-    secret: ${SPRING_USERCHECK_JWT_KEY:sOX6rwX65uDe+JphKfE9SAbC9oR3n61BN84t9zkN9QI=}
+    secret: ${SPRING_USERCHECK_JWT_KEY}
 
   application:
     name: user_check
@@ -36,8 +36,8 @@ spring:
 
   elasticsearch:
     server-url: ${ELASTICSEARCH_SERVER_URL:http://localhost:9200}
-    username: ${ELASTICSEARCH_USERNAME:elastic}
-    password: ${ELASTICSEARCH_PASSWORD:gkwlak98}
+    username: ${ELASTICSEARCH_USERNAME}
+    password: ${ELASTICSEARCH_PASSWORD}
 
 springdoc:
   use-fqn: true

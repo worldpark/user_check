@@ -22,15 +22,20 @@ spring:
     redis:
       host: localhost
       port: 6379
+      password: test-redis-password
   jwt:
     secret: sOX6rwX65uDe+JphKfE9SAbC9oR3n61BN84t9zkN9QI=
   kafka:
     bootstrap-servers:
       - localhost:9092
+    properties:
+      sasl:
+        jaas:
+          config: org.apache.kafka.common.security.plain.PlainLoginModule required username="test-user" password="test-password";
   ai:
     openai:
       api-key: test-api-key
   elasticsearch:
     server-url: http://localhost:9200
-    username: elastic
-    password: gkwlak98
+    username: test-elastic-user
+    password: test-elastic-password

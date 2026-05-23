@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -17,7 +18,13 @@ public class AttendanceSettingService {
     private final AttendanceSettingRepository attendanceSettingRepository;
 
     public AttendanceSetting findAttendanceSetting(){
-        AttendanceSetting result = attendanceSettingRepository.findAll().get(0);
+        List<AttendanceSetting> settings = attendanceSettingRepository.findAll();
+
+        if(settings.isEmpty()){
+            throw new EntityNotFoundWithCodeException("?ㅼ젙??異쒖꽍??議댁옱?섏? ?딆뒿?덈떎.", "050301");
+        }
+
+        AttendanceSetting result = settings.get(0);
 
         if(result == null){
             throw new EntityNotFoundWithCodeException("설정된 출석이 존재하지 않습니다.", "050301");
