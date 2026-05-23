@@ -21,8 +21,16 @@ spring:
 
   kafka:
     producer:
+      acks: all
+      retries: 5
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+        delivery.timeout.ms: 120000
+        request.timeout.ms: 30000
+        retry.backoff.ms: 1000
     bootstrap-servers:
       - ${KAFKA_1_SERVER:localhost:9092}
       - ${KAFKA_2_SERVER:localhost:9093}

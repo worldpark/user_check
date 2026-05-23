@@ -6,6 +6,7 @@ import com.check.user_check.dto.request.attendance.AttendanceUpdateRequest;
 import com.check.user_check.dto.response.admin.AttendanceSummaryResponse;
 import com.check.user_check.dto.response.common.AttendanceResponse;
 import com.check.user_check.service.response.admin.AdminAttendanceResponseService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -48,6 +49,7 @@ public class AdminAttendanceController {
 
 
     @Deprecated
+    @Hidden
     @Operation(summary = "출결 기록 수정")
     @PutMapping("/{attendanceId}")
     @ResultUpdateAndDeleteResponse

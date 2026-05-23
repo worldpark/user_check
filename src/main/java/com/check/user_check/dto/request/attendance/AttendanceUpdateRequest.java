@@ -9,11 +9,12 @@ import java.time.LocalDateTime;
 
 public record AttendanceUpdateRequest(
 
-        @NotNull(message = "날짜 정보가 정확하지 않습니다.")
+        @NotNull(message = "출석 시간이 올바르지 않습니다.")
         @Schema(description = "출석 시간", example = "2025-05-05 08:00:00")
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime checkTime,
 
+        @NotNull(message = "출석 상태를 입력해주세요.")
         @Schema(description = "출석 상태", example = "PRESENT")
         AttendanceStatus status
 ) {}

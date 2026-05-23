@@ -9,10 +9,15 @@ import com.check.user_check.exception.custom.EntityNotFoundWithCodeException;
 import com.check.user_check.exception.custom.UsernameNotFoundWithCodeException;
 import jakarta.persistence.OptimisticLockException;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
+
+import java.util.Objects;
 
 
 @Log4j2
@@ -65,6 +70,54 @@ public class CustomExceptionHandler {
                 exception,
                 "050303",
                 ClientExceptionCode.CONFLICT);
+    }
+
+    @ExceptionHandler({
+            MethodArgumentNotValidException.class,
+            BindException.class
+    })
+    private ResponseEntity<Object> validationException(Exception exception){
+        String field;
+        String message;
+
+        if (exception instanceof MethodArgumentNotValidException methodArgumentNotValidException) {
+            field = Objects.requireNonNull(methodArgumentNotValidException.getBindingResult().getFieldError()).getField();
+            message = methodArgumentNotValidException.getBindingResult().getFieldError().getDefaultMessage();
+        } else {
+            BindException bindException = (BindException) exception;
+            field = Objects.requireNonNull(bindException.getBindingResult().getFieldError()).getField();
+            message = bindException.getBindingResult().getFieldError().getDefaultMessage();
+        }
+
+        return ResultResponse.validation(
+                ClientExceptionCode.BAD_REQUEST,
+                field,
+                message,
+                ClientExceptionCode.BAD_REQUEST.getCode()
+        );
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    private ResponseEntity<Object> handlerMethodValidationException(HandlerMethodValidationException exception){
+        String message = exception.getAllErrors().stream()
+                .map(error -> error.getDefaultMessage())
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(ClientExceptionCode.BAD_REQUEST.getMessage());
+
+        String field = exception.getParameterValidationResults().stream()
+                .filter(result -> result.getMethodParameter() != null)
+                .map(result -> result.getMethodParameter().getParameterName())
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse("request");
+
+        return ResultResponse.validation(
+                ClientExceptionCode.BAD_REQUEST,
+                field,
+                message,
+                ClientExceptionCode.BAD_REQUEST.getCode()
+        );
     }
 
 }
